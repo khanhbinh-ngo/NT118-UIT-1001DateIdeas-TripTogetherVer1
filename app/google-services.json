@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "258781572674",
+    "firebase_url": "https://trip-together-87754-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "trip-together-87754",
+    "storage_bucket": "trip-together-87754.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258781572674:android:57fb7cf95c8dc3ad8b07db",
+        "android_client_info": {
+          "package_name": "com.example.triptogether"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "258781572674-3o1ru4b05v1dmhg3aiaboumvj7rnb6a9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.triptogether",
+            "certificate_hash": "9fdb2454d2de839c1ca33d35a680e2bb06799a32"
+          }
+        },
+        {
+          "client_id": "258781572674-iahonq5ihfliqveb9gieg7q6k6qrk5h4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSY3XXWpLt2gj4bVgO-BpMVgtFlhgjBCM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "258781572674-iahonq5ihfliqveb9gieg7q6k6qrk5h4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
