@@ -30,7 +30,6 @@ class LoginActivity : AppCompatActivity() {
         if (FirebaseAuth.getInstance().currentUser == null) {
             singIn()
         } else {
-            // 🔹 מסנכרנים משתמש מחובר אוטומטית 🔹
             FirebaseSyncUtils.syncCurrentUserToDatabase()
             transactToMainActivity()
         }

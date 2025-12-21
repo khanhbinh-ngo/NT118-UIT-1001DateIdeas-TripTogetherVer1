@@ -1,4 +1,4 @@
-<h1 align="center">✈️ TripTogether - Android Travel Planner App</h1>
+ <h1 align="center">✈️ TripTogether - Android Travel Planner App</h1>
 
 <p align="center">
   <img src="https://cdn-icons-png.flaticon.com/512/201/201623.png" alt="Trip Icon" height="120"/>
