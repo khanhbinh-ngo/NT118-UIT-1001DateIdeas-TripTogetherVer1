@@ -30,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
         if (FirebaseAuth.getInstance().currentUser == null) {
             singIn()
         } else {
+            // 🔹 מסנכרנים משתמש מחובר אוטומטית 🔹
             FirebaseSyncUtils.syncCurrentUserToDatabase()
             transactToMainActivity()
         }
@@ -50,7 +51,6 @@ class LoginActivity : AppCompatActivity() {
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
             .setLogo(R.drawable.logo)
-            .setTheme(R.style.Theme_TripTogether)
             .build()
         signInLauncher.launch(signInIntent)
     }
@@ -58,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         val response = result.idpResponse
         if (result.resultCode == RESULT_OK) {
-            // 🔹 סנכרון מיד לאחר התחברות 🔹
+
             FirebaseSyncUtils.syncCurrentUserToDatabase()
 
             transactToMainActivity()
