@@ -3,32 +3,39 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/_12dp"
-    android:background="@drawable/bg_item_background"
-    android:layout_marginBottom="8dp">
+    android:paddingVertical="12dp"
+    android:paddingHorizontal="8dp"
+    android:layout_marginBottom="8dp"
+    android:gravity="center_vertical">
 
+    <!-- Time -->
     <TextView
         android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
+        android:layout_width="56dp"
         android:layout_height="wrap_content"
         android:text="@string/default_time"
         android:textStyle="bold"
-        android:textSize="@dimen/default_size"
-        android:layout_marginEnd="@dimen/_12dp" />
+        android:textSize="14sp"
+        android:textColor="@color/blue_primary" />
 
+    <!-- Emoji -->
     <TextView
         android:id="@+id/tvEmoji"
-        android:layout_width="wrap_content"
+        android:layout_width="32dp"
         android:layout_height="wrap_content"
         android:text="@string/emoji_default"
         android:textSize="20sp"
-        android:layout_marginEnd="@dimen/_12dp" />
+        android:gravity="center"
+        android:layout_marginEnd="8dp" />
 
+    <!-- Description -->
     <TextView
         android:id="@+id/tvDescription"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="@string/default_plan"
-        android:textSize="@dimen/default_size" />
+        android:textSize="14sp"
+        android:textColor="@color/black" />
+
 </LinearLayout>

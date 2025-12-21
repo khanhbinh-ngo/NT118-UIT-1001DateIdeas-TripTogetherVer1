@@ -5,11 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:background="@color/light_background">
 
     <!-- Country Name -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layoutCountry"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/country_name"
@@ -23,39 +25,15 @@
             android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-
     <!-- Trip Name -->
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/ivTripImage"
-        android:layout_width="167dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="356dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/default_trip_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutCountry" />
-
-    <Button
-        android:id="@+id/btnSelectImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/choose_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.524"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivTripImage" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layoutTripName"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/trip_name"
-        app:layout_constraintTop_toBottomOf="@id/layoutCountry"
         android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/layoutCountry"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -65,14 +43,39 @@
             android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Trip Image -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivTripImage"
+        android:layout_width="0dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_trip_image"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.MediumComponent"
+        app:layout_constraintTop_toBottomOf="@id/layoutTripName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btnSelectImage"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_image"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/ivTripImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- Start Date -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layoutStartDate"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/start_date"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/layoutTripName"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/btnSelectImage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -86,6 +89,7 @@
     <!-- End Date -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layoutEndDate"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/end_date"
@@ -98,37 +102,37 @@
             android:id="@+id/etEndDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="false" />
+            android:focusable="false"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Members -->
-
-    <!-- Save Button -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layoutMembers"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:hint="@string/emails_of_members_separated_by_commas"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/layoutEndDate"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutEndDate">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etMembers"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Save Button -->
     <Button
         android:id="@+id/btnSaveTrip"
-        android:layout_width="wrap_content"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="252dp"
         android:text="@string/save_trip"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/layoutMembers"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutMembers" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

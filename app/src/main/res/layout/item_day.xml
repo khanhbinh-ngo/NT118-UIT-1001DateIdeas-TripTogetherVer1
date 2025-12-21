@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="8dp"
-    android:background="@drawable/bg_day_unselected">
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="12dp"
+    android:layout_marginHorizontal="6dp">
 
+    <!-- Day number -->
     <TextView
         android:id="@+id/tvDayNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Day 1"
-        android:textColor="@color/black"
+        android:textColor="@color/blue_primary"
         android:textSize="14sp"
         android:textStyle="bold" />
 
+    <!-- Date -->
     <TextView
         android:id="@+id/tvDayDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="20 June "
+        android:text="20 Jun"
         android:textColor="@color/gray"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:layout_marginTop="2dp" />
+
 </LinearLayout>

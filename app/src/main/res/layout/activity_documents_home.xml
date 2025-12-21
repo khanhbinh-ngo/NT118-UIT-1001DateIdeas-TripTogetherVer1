@@ -11,21 +11,23 @@
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="Shared Files"
+        android:textColor="@color/blue_dark"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="@color/blue_primary"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardDocuments"
+        android:background="@color/green_dark"
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_marginTop="32dp"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="20dp"
         app:cardElevation="6dp"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
@@ -58,22 +60,23 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/images"
-            android:textSize="20sp"
             android:gravity="center"
-            android:textColor="@color/black"/>
+            android:text="@string/images"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
     </androidx.cardview.widget.CardView>
 
     <Button
         android:id="@+id/btnUploadFile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/upload_file_or_image"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="48dp"
         android:backgroundTint="@color/blue_secondary"
+        android:text="@string/upload_file_or_image"
         android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/cardImages"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/cardImages" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

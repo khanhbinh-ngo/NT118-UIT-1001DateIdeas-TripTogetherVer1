@@ -4,34 +4,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/light_background"
+    android:padding="20dp">
 
-
-    <ImageView
-        android:id="@+id/btnBackSearch"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:src="@drawable/ic_back"
-        android:contentDescription="@string/backs"
-        android:layout_gravity="start" />
-
-
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
+    <!-- Top Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/search_results"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/blue_primary"
-        android:layout_marginTop="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
+        <ImageView
+            android:id="@+id/btnBackSearch"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="@string/backs"/>
 
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="@string/search_results"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/blue_primary"/>
+    </LinearLayout>
+
+    <!-- Results -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvResults"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="8dp" />
-
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"/>
 </LinearLayout>
