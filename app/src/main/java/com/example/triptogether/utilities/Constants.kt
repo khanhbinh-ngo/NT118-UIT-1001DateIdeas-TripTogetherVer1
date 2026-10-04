@@ -1,5 +1,11 @@
 package com.example.triptogether.utilities
 
+import com.example.triptogether.BuildConfig
+
 object Constants {
-    const val GEOCODING_API_KEY = "AIzaSyAVLDEFuwZSzgOS9r5lCqeqXWZTYMmgyEo"
+    val GEOCODING_API_KEY: String
+        get() = BuildConfig.GEOCODING_API_KEY
+
+    val MAPS_API_KEY: String
+        get() = BuildConfig.MAPS_API_KEY
 }

@@ -1,7 +1,9 @@
 package com.example.triptogether.model
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Trip(
     val id: String = "",
     val name: String = "",
@@ -10,9 +12,9 @@ data class Trip(
     val endDate: String = "",
     val members: List<String> = emptyList(),
     val createdBy: String = "",
-    var isFavorite: Boolean = false,
+    val isFavorite: Boolean = false,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val imageUrl: String? = null
-) : Serializable
-
+    val imageUrl: String? = null,
+    @get:com.google.firebase.database.Exclude val hasUnreadMessages: Boolean = false,
+) : Parcelable
