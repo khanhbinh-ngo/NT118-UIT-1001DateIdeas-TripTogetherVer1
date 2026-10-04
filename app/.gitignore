@@ -1,1 +1,7 @@
 /build
+/drive.local.properties
+
+/google-services.json
+
+/.idea/
+/docs/

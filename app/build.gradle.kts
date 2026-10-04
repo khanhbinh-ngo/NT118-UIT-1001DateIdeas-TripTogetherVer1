@@ -4,12 +4,38 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.services)
-    id("kotlin-kapt")
+    id("kotlin-parcelize")
+    alias(libs.plugins.spotless)
 }
 
-val localProperties = Properties()
-localProperties.load(project.rootProject.file("local.properties").inputStream())
-val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY")
+val localProperties =
+    Properties().apply {
+        val propertiesFile = rootProject.file("local.properties")
+        if (propertiesFile.isFile) {
+            propertiesFile.inputStream().use { load(it) }
+        }
+    }
+val mapsApiKey =
+    providers
+        .gradleProperty("MAPS_API_KEY")
+        .orElse(providers.environmentVariable("MAPS_API_KEY"))
+        .orElse(localProperties.getProperty("MAPS_API_KEY", ""))
+        .get()
+val geocodingApiKey =
+    providers
+        .gradleProperty("GEOCODING_API_KEY")
+        .orElse(providers.environmentVariable("GEOCODING_API_KEY"))
+        .orElse(localProperties.getProperty("GEOCODING_API_KEY", ""))
+        .get()
+
+fun escapeBuildConfigValue(value: String) =
+    value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r")
+
+val driveProperties =
+    Properties().apply {
+        val configuration = file("drive.local.properties")
+        if (configuration.isFile) configuration.inputStream().use { load(it) }
+    }
 
 android {
     namespace = "com.example.triptogether"
@@ -21,9 +47,20 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+        buildConfigField(
+            "String",
+            "DRIVE_FOLDER_ID",
+            "\"${escapeBuildConfigValue(driveProperties.getProperty("DRIVE_FOLDER_ID", ""))}\"",
+        )
 
-        buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
+        manifestPlaceholders["mapsApiKey"] = mapsApiKey
+        buildConfigField("String", "MAPS_API_KEY", "\"${escapeBuildConfigValue(mapsApiKey)}\"")
 
+        buildConfigField(
+            "String",
+            "GEOCODING_API_KEY",
+            "\"${escapeBuildConfigValue(geocodingApiKey)}\"",
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -33,26 +70,24 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
         buildConfig = true
     }
 }
 
-dependencies {
+kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
 
-    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+dependencies {
+    implementation(platform(libs.firebase.bom))
     implementation(libs.play.services.maps)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -64,17 +99,31 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.kotlinx.coroutines.android)
+
     // Firebase
+    implementation(libs.firebase.auth)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.database)
-    implementation(libs.firebase.storage)
+    implementation("com.google.android.gms:play-services-auth:22.0.0")
 
     // Firebase Auth UI (kéo theo firebase-auth)
     implementation(libs.firebase.ui.auth)
 
     // Image load
     implementation(libs.glide)
+}
 
-    // Google Maps
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
+spotless {
+    kotlin {
+        target("src/**/*.kt")
+        ktfmt("0.54").kotlinlangStyle().configure { it.setRemoveUnusedImports(true) }
+    }
+    kotlinGradle {
+        target("build.gradle.kts")
+        ktfmt("0.54").kotlinlangStyle().configure { it.setRemoveUnusedImports(true) }
+    }
 }
