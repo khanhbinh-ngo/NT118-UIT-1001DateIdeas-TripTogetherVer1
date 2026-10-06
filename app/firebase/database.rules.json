@@ -1,0 +1,137 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      ".indexOn": [
+        "emailNormalized"
+      ],
+      ".read": "auth != null && query.orderByChild === 'emailNormalized' && query.equalTo != null && query.limitToFirst === 1",
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['email', 'emailNormalized', 'name']) && newData.child('email').val() === auth.token.email && newData.child('name').isString() && newData.child('name').val().length <= 150",
+        "emailNormalized": {
+          ".validate": "newData.isString() && newData.val() === auth.token.email.toLowerCase()"
+        }
+      }
+    },
+    "tripAccess": {
+      "$tripId": {
+        ".read": "auth != null && root.child('tripAccess').child($tripId).child('members').child(auth.uid).val() === true",
+        ".write": "auth != null && ((!data.exists() && newData.child('creatorUid').val() === auth.uid) || data.child('creatorUid').val() === auth.uid) && newData.exists()",
+        ".validate": "newData.hasChildren(['creatorUid','members','updatedAt','revision']) && (!data.exists() || newData.child('creatorUid').val() === data.child('creatorUid').val()) && newData.child('members').child(newData.child('creatorUid').val()).val() === true && newData.parent().parent().child('trips').child(newData.child('creatorUid').val()).child($tripId).child('createdBy').val() === newData.child('creatorUid').val()",
+        "members": {
+          "$uid": {
+            ".validate": "newData.val() === true"
+          }
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() === now"
+        },
+        "$other": {
+          ".validate": false
+        },
+        "creatorUid": {
+          ".validate": "newData.isString()"
+        },
+        "revision": {
+          ".validate": "newData.isNumber() && ((!data.exists() && newData.val() === 0) || (data.exists() && newData.val() === data.val() + 1))"
+        }
+      }
+    },
+    "trips": {
+      "$creatorUid": {
+        ".read": "auth != null && auth.uid === $creatorUid",
+        "$tripId": {
+          ".read": "auth != null && root.child('tripAccess').child($tripId).child('members').child(auth.uid).val() === true",
+          ".write": "auth != null && auth.uid === $creatorUid && newData.exists()",
+          ".validate": "newData.hasChildren(['id','createdBy','name','country','startDate','endDate','members']) && newData.child('id').val() === $tripId && newData.child('createdBy').val() === $creatorUid && newData.parent().parent().parent().child('tripAccess').child($tripId).child('creatorUid').val() === $creatorUid",
+          "name": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 150"
+          },
+          "country": {
+            ".validate": "newData.isString() && newData.val().length <= 200"
+          },
+          "startDate": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{2}\\/[0-9]{2}\\/[0-9]{4}$/)"
+          },
+          "endDate": {
+            ".validate": "newData.isString() && newData.val().matches(/^[0-9]{2}\\/[0-9]{2}\\/[0-9]{4}$/)"
+          },
+          "plan": {
+            "$day": {
+              "$activityId": {
+                ".write": "auth != null && root.child('tripAccess').child($tripId).child('members').child(auth.uid).val() === true",
+                ".validate": "newData.hasChildren(['time','emoji','description']) && newData.child('time').isString() && newData.child('time').val().matches(/^([01][0-9]|2[0-3]):[0-5][0-9]$/) && newData.child('description').isString() && newData.child('description').val().length <= 2000"
+              }
+            }
+          }
+        }
+      }
+    },
+    "userTrips": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$tripId": {
+          ".write": "auth != null && ((newData.isString() && newData.val() === auth.uid && newData.parent().parent().parent().child('tripAccess').child($tripId).child('members').child($uid).val() === true && newData.parent().parent().parent().child('tripAccess').child($tripId).child('creatorUid').val() === auth.uid) || (!newData.exists() && root.child('tripAccess').child($tripId).child('creatorUid').val() === auth.uid))",
+          ".validate": "newData.isString() && newData.val() === newData.parent().parent().parent().child('tripAccess').child($tripId).child('creatorUid').val()"
+        }
+      }
+    },
+    "favorites": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$tripId": {
+          ".write": "auth != null && (auth.uid === $uid || (!newData.exists() && root.child('tripAccess').child($tripId).child('creatorUid').val() === auth.uid))",
+          ".validate": "newData.isString() && newData.val() === root.child('tripAccess').child($tripId).child('creatorUid').val() && root.child('tripAccess').child($tripId).child('members').child($uid).val() === true"
+        }
+      }
+    },
+    "lastSeenChat": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$tripId": {
+          ".write": "auth != null && (auth.uid === $uid || (!newData.exists() && root.child('tripAccess').child($tripId).child('creatorUid').val() === auth.uid))",
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= now && (!data.exists() || newData.val() >= data.val())"
+        }
+      }
+    },
+    "chats": {
+      "$tripId": {
+        ".read": "auth != null && root.child('tripAccess').child($tripId).child('members').child(auth.uid).val() === true",
+        ".indexOn": [
+          "timestamp"
+        ],
+        "$messageId": {
+          ".write": "auth != null && root.child('tripAccess').child($tripId).child('members').child(auth.uid).val() === true && !data.exists() && newData.exists()",
+          ".validate": "newData.hasChildren(['senderUid','sender','message','timestamp']) && newData.child('senderUid').val() === auth.uid && newData.child('sender').val() === auth.token.email && newData.child('message').isString() && newData.child('message').val().length > 0 && newData.child('message').val().length <= 4000 && newData.child('timestamp').val() === now"
+        }
+      }
+    },
+    "tripImages": {
+      "$tripId": {
+        ".read": "auth != null && root.child('tripAccess').child($tripId).child('members').child(auth.uid).val() === true",
+        ".indexOn": [
+          "timestamp"
+        ],
+        "$itemId": {
+          ".write": "auth != null && root.child('tripAccess').child($tripId).child('members').child(auth.uid).val() === true && !data.exists() && newData.exists()",
+          ".validate": "newData.hasChildren(['name','url','uploadedByUid','uploadedBy','timestamp','provider','driveFileId','contentType','sizeBytes']) && newData.child('uploadedByUid').val() === auth.uid && newData.child('uploadedBy').val() === auth.token.email && newData.child('provider').val() === 'drive' && newData.child('driveFileId').isString() && newData.child('driveFileId').val().matches(/^[A-Za-z0-9_-]+$/) && newData.child('url').val() === 'https://www.googleapis.com/drive/v3/files/' + newData.child('driveFileId').val() + '?alt=media' && newData.child('sizeBytes').isNumber() && newData.child('sizeBytes').val() > 0 && newData.child('sizeBytes').val() <= 20971520 && newData.child('timestamp').val() === now && newData.child('name').isString() && newData.child('name').val().length <= 200 && newData.child('contentType').isString() && newData.child('contentType').val().beginsWith('image/') && newData.child('sizeBytes').val() <= 10485760"
+        }
+      }
+    },
+    "tripDocuments": {
+      "$tripId": {
+        ".read": "auth != null && root.child('tripAccess').child($tripId).child('members').child(auth.uid).val() === true",
+        ".indexOn": [
+          "timestamp"
+        ],
+        "$itemId": {
+          ".write": "auth != null && root.child('tripAccess').child($tripId).child('members').child(auth.uid).val() === true && !data.exists() && newData.exists()",
+          ".validate": "newData.hasChildren(['name','url','uploadedByUid','uploadedBy','timestamp','provider','driveFileId','contentType','sizeBytes']) && newData.child('uploadedByUid').val() === auth.uid && newData.child('uploadedBy').val() === auth.token.email && newData.child('provider').val() === 'drive' && newData.child('driveFileId').isString() && newData.child('driveFileId').val().matches(/^[A-Za-z0-9_-]+$/) && newData.child('url').val() === 'https://www.googleapis.com/drive/v3/files/' + newData.child('driveFileId').val() + '?alt=media' && newData.child('sizeBytes').isNumber() && newData.child('sizeBytes').val() > 0 && newData.child('sizeBytes').val() <= 20971520 && newData.child('timestamp').val() === now && newData.child('name').isString() && newData.child('name').val().length <= 200 && newData.child('contentType').val() === 'application/pdf'"
+        }
+      }
+    }
+  }
+}

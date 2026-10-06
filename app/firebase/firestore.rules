@@ -1,0 +1,7 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only the trusted RTDB trigger/Admin SDK writes ACL documents.
+    match /{document=**} { allow read, write: if false; }
+  }
+}
