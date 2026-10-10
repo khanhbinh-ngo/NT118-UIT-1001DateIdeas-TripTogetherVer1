@@ -1,135 +1,98 @@
 package com.example.triptogether.adapters
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.triptogether.R
-import com.example.triptogether.TripSummaryActivity
 import com.example.triptogether.model.Trip
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 
+/** Presentation only: navigation and writes are handled by the owning screen. */
 class TripAdapter(
-    private val tripList: List<Trip>
-) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
-
-    class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tripImage: ImageView = itemView.findViewById(R.id.ivTripImage)
-        val tripName: TextView = itemView.findViewById(R.id.tvTripName)
-        val tripDates: TextView = itemView.findViewById(R.id.tvTripDates)
-        val tripCountry: TextView = itemView.findViewById(R.id.tvCountryName)
-        val favoriteIcon: ImageView = itemView.findViewById(R.id.ivFavorite)
-        val unreadDot: View = itemView.findViewById(R.id.unreadDot)
+    trips: List<Trip> = emptyList(),
+    private val compact: Boolean = false,
+    private val interactive: Boolean = true,
+    private val onOpen: (Trip) -> Unit = {},
+    private val onFavorite: (Trip) -> Unit = {},
+) : ListAdapter<Trip, TripAdapter.Holder>(Diff) {
+    init {
+        submitList(trips.toList())
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_trip, parent, false)
-        return TripViewHolder(view)
+    class Holder(view: View) : RecyclerView.ViewHolder(view) {
+        val image: ImageView = view.findViewById(R.id.ivTripImage)
+        val name: TextView = view.findViewById(R.id.tvTripName)
+        val dates: TextView = view.findViewById(R.id.tvTripDates)
+        val country: TextView = view.findViewById(R.id.tvCountryName)
+        val favorite: ImageView = view.findViewById(R.id.ivFavorite)
+        val unread: View = view.findViewById(R.id.unreadDot)
     }
 
-    override fun onBindViewHolder(holder: TripViewHolder, position: Int) {
-        val trip = tripList[position]
-
-        holder.tripName.text = trip.name
-        holder.tripDates.text = buildString {
-        append(trip.startDate)
-        append(" - ")
-        append(trip.endDate)
-    }
-        holder.tripCountry.text = trip.country
-
-        if (!trip.imageUrl.isNullOrEmpty()) {
-            Glide.with(holder.itemView.context)
-                .load(trip.imageUrl)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(holder.tripImage)
-        } else {
-            holder.tripImage.setImageResource(R.drawable.default_trip_image)
-        }
-
-
-
-        holder.unreadDot.visibility = View.GONE // Reset visibility due to view recycling
-
-        // Favorites
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val favoriteRef = FirebaseDatabase.getInstance()
-            .getReference("favorites")
-            .child(uid)
-            .child(trip.id)
-
-        favoriteRef.get().addOnSuccessListener { snapshot ->
-            val isFavorite = snapshot.exists()
-            holder.favoriteIcon.setImageResource(
-                if (isFavorite) R.drawable.ic_star_filled else R.drawable.ic_fav
-            )
-        }
-
-        holder.favoriteIcon.setOnClickListener {
-            favoriteRef.get().addOnSuccessListener { snapshot ->
-                val isFavorite = snapshot.exists()
-                val newFavoriteState = !isFavorite
-
-                if (newFavoriteState) {
-                    favoriteRef.setValue(trip)
-                } else {
-                    favoriteRef.removeValue()
-                }
-
-                holder.favoriteIcon.setImageResource(
-                    if (newFavoriteState) R.drawable.ic_star_filled else R.drawable.ic_fav
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        Holder(
+            LayoutInflater.from(parent.context)
+                .inflate(
+                    if (compact) R.layout.item_favorite_trip else R.layout.item_trip,
+                    parent,
+                    false,
                 )
+        )
+
+    override fun onBindViewHolder(holder: Holder, position: Int) {
+        val trip = getItem(position)
+        holder.name.text = trip.name
+        holder.country.text = trip.country
+        holder.dates.text =
+            holder.itemView.context.getString(R.string.trip_dates, trip.startDate, trip.endDate)
+        if (compact) {
+            val start = com.example.triptogether.utilities.TripFilters.date(trip.startDate)
+            val end = com.example.triptogether.utilities.TripFilters.date(trip.endDate)
+            if (
+                start != null && end != null && start.month == end.month && start.year == end.year
+            ) {
+                val month =
+                    end.format(
+                        java.time.format.DateTimeFormatter.ofPattern(
+                            "MMM uuuu",
+                            java.util.Locale.getDefault(),
+                        )
+                    )
+                holder.dates.text = "${start.dayOfMonth}–${end.dayOfMonth} $month"
             }
         }
-
-
-        // Navigate to TripSummary
-        holder.itemView.setOnClickListener {
-            val context = holder.itemView.context
-            val intent = Intent(context, TripSummaryActivity::class.java)
-            intent.putExtra("trip", trip)
-            context.startActivity(intent)
-        }
-
-        // 🔔 Check for unread chat messages
-        val lastSeenRef = FirebaseDatabase.getInstance()
-            .getReference("lastSeenChat")
-            .child(uid)
-            .child(trip.id)
-
-        val chatRef = FirebaseDatabase.getInstance()
-            .getReference("chats")
-            .child(trip.id)
-
-        lastSeenRef.get().addOnSuccessListener { lastSeenSnap ->
-            val lastSeen = lastSeenSnap.getValue(Long::class.java) ?: 0
-
-            chatRef.orderByChild("timestamp").limitToLast(1).get()
-                .addOnSuccessListener { chatSnap ->
-                    var hasNew = false
-                    for (msg in chatSnap.children) {
-                        val timestamp = msg.child("timestamp").getValue(Long::class.java) ?: 0
-                        if (timestamp > lastSeen) {
-                            hasNew = true
-                            break
-                        }
-                    }
-                    holder.unreadDot.visibility = if (hasNew) View.VISIBLE else View.GONE
-                }
-                .addOnFailureListener {
-                    holder.unreadDot.visibility = View.GONE
-                }
-        }.addOnFailureListener {
-            holder.unreadDot.visibility = View.GONE
-        }
+        com.example.triptogether.drive.DriveImages.load(
+            holder.image,
+            trip.imageUrl,
+            R.drawable.default_trip_image,
+            circle = false,
+        )
+        holder.unread.visibility = if (trip.hasUnreadMessages) View.VISIBLE else View.GONE
+        holder.favorite.isEnabled = interactive
+        holder.favorite.setImageResource(
+            if (trip.isFavorite) R.drawable.ic_ui_heart_filled else R.drawable.ic_ui_heart
+        )
+        holder.favorite.setColorFilter(
+            ContextCompat.getColor(
+                holder.itemView.context,
+                if (compact) R.color.on_brand else R.color.ink,
+            )
+        )
+        holder.favorite.contentDescription =
+            holder.itemView.context.getString(
+                if (trip.isFavorite) R.string.remove_favorite else R.string.add_favorite
+            )
+        holder.itemView.setOnClickListener { if (interactive) onOpen(trip) }
+        holder.favorite.setOnClickListener { if (interactive) onFavorite(trip) }
     }
 
-    override fun getItemCount(): Int = tripList.size
+    private object Diff : DiffUtil.ItemCallback<Trip>() {
+        override fun areItemsTheSame(oldItem: Trip, newItem: Trip) = oldItem.id == newItem.id
+
+        override fun areContentsTheSame(oldItem: Trip, newItem: Trip) = oldItem == newItem
+    }
 }

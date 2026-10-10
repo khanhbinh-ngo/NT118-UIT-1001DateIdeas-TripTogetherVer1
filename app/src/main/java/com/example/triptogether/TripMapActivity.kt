@@ -1,7 +1,10 @@
 package com.example.triptogether
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
+import com.example.triptogether.databinding.ActivityTripMapBinding
+import com.example.triptogether.ui.PlannerActivity
+import com.example.triptogether.utilities.Constants
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -9,18 +12,31 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
-class TripMapActivity : AppCompatActivity(), OnMapReadyCallback {
+class TripMapActivity : PlannerActivity(), OnMapReadyCallback {
+    private lateinit var binding: ActivityTripMapBinding
 
     private lateinit var googleMap: GoogleMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_trip_map)
+        binding = ActivityTripMapBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.mapTitle.text =
+            intent.getStringExtra("country") ?: getString(R.string.trip_location)
 
-        // Initialize the map fragment
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        if (Constants.MAPS_API_KEY.isBlank()) {
+            binding.mapStatus.apply {
+                visibility = View.VISIBLE
+                setText(R.string.map_key_missing)
+            }
+            return
+        }
+        val fragment =
+            supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+                ?: SupportMapFragment.newInstance().also {
+                    supportFragmentManager.beginTransaction().replace(R.id.map, it).commitNow()
+                }
+        fragment.getMapAsync(this)
     }
 
     // Called when the map is ready to be used
@@ -32,6 +48,16 @@ class TripMapActivity : AppCompatActivity(), OnMapReadyCallback {
         val lng = intent.getDoubleExtra("tripLng", 0.0)
         val countryName = intent.getStringExtra("country") ?: "Trip location"
 
+        if (
+            !lat.isFinite() ||
+                !lng.isFinite() ||
+                lat !in -90.0..90.0 ||
+                lng !in -180.0..180.0 ||
+                (lat == 0.0 && lng == 0.0)
+        ) {
+            binding.mapStatus.visibility = View.VISIBLE
+            return
+        }
         // Create a LatLng object and show a pin on the map
         val latLng = LatLng(lat, lng)
         googleMap.addMarker(MarkerOptions().position(latLng).title(countryName))
