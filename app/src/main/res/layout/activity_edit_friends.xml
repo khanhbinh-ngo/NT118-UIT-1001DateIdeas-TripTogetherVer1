@@ -1,27 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layoutEditFriends"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/light_background">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvEditFriends"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:scrollbars="vertical" />
-
-    <Button
-        android:id="@+id/btnAddFriend"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="@string/add_friend" />
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/canvas" android:id="@+id/screenRoot">
+    <include layout="@layout/include_brand_header" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <Space android:layout_width="0dp" android:layout_height="0dp" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Title" android:text="@string/manage_members" android:id="@+id/screenTitle" android:layout_weight="1" android:layout_marginStart="14dp" android:textSize="20sp" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Muted" android:text="@string/invite_hint" android:layout_marginTop="12dp" />
+    </LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvEditFriends" android:layout_width="match_parent" android:layout_height="match_parent" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="20dp" android:clipToPadding="false" />
+        <androidx.core.widget.NestedScrollView android:id="@+id/statePanel" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="24dp">
+                <androidx.appcompat.widget.AppCompatImageView android:id="@+id/stateIcon" android:layout_width="64dp" android:layout_height="64dp" android:src="@drawable/ic_ui_trips" app:tint="@color/muted" android:importantForAccessibility="no" />
+                <Space android:layout_width="1dp" android:layout_height="16dp" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Subtitle" android:text="@string/no_trips_yet" android:id="@+id/stateMessage" android:gravity="center" />
+                <Space android:layout_width="1dp" android:layout_height="16dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnRetry" style="@style/Widget.Trip.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/retry" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+        <ProgressBar android:id="@+id/loadingIndicator" android:layout_width="40dp" android:layout_height="40dp" android:layout_gravity="center" android:visibility="gone" android:indeterminateTint="@color/primary" />
+    </FrameLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnAddFriend" style="@style/Widget.Trip.Button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/invite_member" />
+    </LinearLayout>
 </LinearLayout>

@@ -5,43 +5,42 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.triptogether.R
 import com.example.triptogether.model.Friend
-import com.google.firebase.database.FirebaseDatabase
 
-class FriendsAdapter(private val friends: List<Friend>) : RecyclerView.Adapter<FriendsAdapter.FriendViewHolder>() {
-
-    inner class FriendViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvName: TextView = itemView.findViewById(R.id.tvName)
-        val tvRole: TextView = itemView.findViewById(R.id.tvRole)
-        val ivProfile: ImageView = itemView.findViewById(R.id.ivProfile)
+class FriendsAdapter(friends: List<Friend> = emptyList()) :
+    ListAdapter<Friend, FriendsAdapter.Holder>(Diff) {
+    init {
+        submitList(friends.toList())
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_friend, parent, false)
-        return FriendViewHolder(view)
+    class Holder(view: View) : RecyclerView.ViewHolder(view) {
+        val avatar: ImageView = view.findViewById(R.id.ivProfile)
+        val name: TextView = view.findViewById(R.id.tvName)
+        val role: TextView = view.findViewById(R.id.tvRole)
     }
 
-    override fun onBindViewHolder(holder: FriendViewHolder, position: Int) {
-        val friend = friends[position]
-        holder.tvName.text = friend.name
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        Holder(LayoutInflater.from(parent.context).inflate(R.layout.item_friend, parent, false))
 
-        val userRef = FirebaseDatabase.getInstance().getReference("users").child(friend.uid)
-        userRef.get().addOnSuccessListener { snapshot ->
-            val role = snapshot.child("role").getValue(String::class.java) ?: ""
-            val imageUrl = snapshot.child("imageUrl").getValue(String::class.java)
-                ?: snapshot.child("photoUrl").getValue(String::class.java)
-
-            holder.tvRole.text = role
-            Glide.with(holder.itemView.context)
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_user_placeholder)
-                .into(holder.ivProfile)
-        }
+    override fun onBindViewHolder(holder: Holder, position: Int) {
+        val friend = getItem(position)
+        holder.name.text = friend.name
+        holder.role.text = friend.role
+        com.example.triptogether.drive.DriveImages.load(
+            holder.avatar,
+            friend.imageUrl,
+            R.drawable.ic_ui_user,
+            circle = true,
+        )
     }
 
+    private object Diff : DiffUtil.ItemCallback<Friend>() {
+        override fun areItemsTheSame(oldItem: Friend, newItem: Friend) = oldItem.uid == newItem.uid
 
-    override fun getItemCount(): Int = friends.size
+        override fun areContentsTheSame(oldItem: Friend, newItem: Friend) = oldItem == newItem
+    }
 }

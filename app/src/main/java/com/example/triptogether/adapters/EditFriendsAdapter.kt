@@ -5,53 +5,50 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.triptogether.R
 import com.example.triptogether.model.Friend
 
 class EditFriendsAdapter(
-    private val friends: List<Friend>,
+    friends: List<Friend> = emptyList(),
     private val currentUserId: String,
-    private val onDeleteClicked: (Friend) -> Unit
-) : RecyclerView.Adapter<EditFriendsAdapter.FriendViewHolder>() {
-
-    inner class FriendViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val ivProfile: ImageView = view.findViewById(R.id.ivProfile)
-        val tvName: TextView = view.findViewById(R.id.tvName)
-        val tvRole: TextView = view.findViewById(R.id.tvRole)
-        val ivDelete: ImageView = view.findViewById(R.id.ivDelete)
+    private val onDeleteClicked: (Friend) -> Unit,
+) : ListAdapter<Friend, EditFriendsAdapter.Holder>(Diff) {
+    init {
+        submitList(friends.toList())
     }
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_edit_friend, parent, false)
-        return FriendViewHolder(view)
+    class Holder(view: View) : RecyclerView.ViewHolder(view) {
+        val avatar: ImageView = view.findViewById(R.id.ivProfile)
+        val name: TextView = view.findViewById(R.id.tvName)
+        val role: TextView = view.findViewById(R.id.tvRole)
+        val delete: ImageView = view.findViewById(R.id.ivDelete)
     }
 
-    override fun onBindViewHolder(holder: FriendViewHolder, position: Int) {
-        val friend = friends[position]
-        holder.tvName.text = friend.name
-        holder.tvRole.text = ""
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        Holder(
+            LayoutInflater.from(parent.context).inflate(R.layout.item_edit_friend, parent, false)
+        )
 
-        val userRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("users").child(friend.uid)
-        userRef.get().addOnSuccessListener { snapshot ->
-            val role = snapshot.child("role").getValue(String::class.java) ?: ""
-            val imageUrl = snapshot.child("imageUrl").getValue(String::class.java)
-                ?: snapshot.child("photoUrl").getValue(String::class.java)
-
-            holder.tvRole.text = role
-            com.bumptech.glide.Glide.with(holder.itemView.context)
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_user_placeholder)
-                .into(holder.ivProfile)
-        }
-
-        holder.ivDelete.visibility = if (friend.uid == currentUserId) View.GONE else View.VISIBLE
-        holder.ivDelete.setOnClickListener {
-            onDeleteClicked(friend)
-        }
+    override fun onBindViewHolder(holder: Holder, position: Int) {
+        val friend = getItem(position)
+        holder.name.text = friend.name
+        holder.role.text = friend.role
+        com.example.triptogether.drive.DriveImages.load(
+            holder.avatar,
+            friend.imageUrl,
+            R.drawable.ic_ui_user,
+            circle = true,
+        )
+        holder.delete.visibility = if (friend.uid == currentUserId) View.GONE else View.VISIBLE
+        holder.delete.setOnClickListener { onDeleteClicked(friend) }
     }
 
-    override fun getItemCount(): Int = friends.size
+    private object Diff : DiffUtil.ItemCallback<Friend>() {
+        override fun areItemsTheSame(oldItem: Friend, newItem: Friend) = oldItem.uid == newItem.uid
+
+        override fun areContentsTheSame(oldItem: Friend, newItem: Friend) = oldItem == newItem
+    }
 }

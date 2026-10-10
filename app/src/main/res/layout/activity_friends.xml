@@ -1,87 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="@color/light_background">
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/btnHomeFriend"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:src="@drawable/ic_home_grey"
-        android:layout_gravity="end"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp" />
-
-    <!--  -->
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/your_partner"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/blue_primary"
-        android:layout_marginBottom="@dimen/default_16" />
-
-    <!--Main Profile-->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ivMainUser"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:src="@drawable/default_user_picture"
-            android:layout_marginEnd="12dp"
-            android:scaleType="centerCrop"
-            />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvMainName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/name"
-                android:textStyle="bold"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tvMainRole"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/default_role"
-                android:textColor="@color/gray" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/canvas" android:id="@+id/screenRoot">
+    <include layout="@layout/include_brand_header" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <androidx.appcompat.widget.AppCompatImageView android:id="@+id/btnHomeFriend" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_ui_back" android:padding="12dp" android:background="@drawable/bg_icon" android:contentDescription="@string/back" android:clickable="true" android:focusable="true" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Title" android:text="@string/travel_together" android:id="@+id/screenTitle" android:layout_weight="1" android:layout_marginStart="14dp" android:textSize="20sp" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnEditFriends"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/edit_friends"
-            android:backgroundTint="@color/blue_primary"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Muted" android:text="@string/members_hint" android:layout_marginTop="12dp" />
     </LinearLayout>
-
-    <!-- Friends List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvFriends"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:overScrollMode="never" />
-
-
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="24dp" android:paddingEnd="24dp" android:paddingBottom="20dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp" android:background="@drawable/bg_soft">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <androidx.appcompat.widget.AppCompatImageView android:id="@+id/ivMainUser" android:layout_width="64dp" android:layout_height="64dp" android:src="@drawable/sample_user_icon" android:contentDescription="@string/profile_image" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:orientation="vertical" android:layout_weight="1" android:layout_marginStart="16dp">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Subtitle" android:id="@+id/tvMainName" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Muted" android:id="@+id/tvMainRole" android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <Space android:layout_width="1dp" android:layout_height="16dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnEditFriends" style="@style/Widget.Trip.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/manage_members" />
+    </LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvFriends" android:layout_width="match_parent" android:layout_height="match_parent" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="20dp" android:clipToPadding="false" />
+        <androidx.core.widget.NestedScrollView android:id="@+id/statePanel" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="24dp">
+                <androidx.appcompat.widget.AppCompatImageView android:id="@+id/stateIcon" android:layout_width="64dp" android:layout_height="64dp" android:src="@drawable/ic_ui_trips" app:tint="@color/muted" android:importantForAccessibility="no" />
+                <Space android:layout_width="1dp" android:layout_height="16dp" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Subtitle" android:text="@string/no_trips_yet" android:id="@+id/stateMessage" android:gravity="center" />
+                <Space android:layout_width="1dp" android:layout_height="16dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnRetry" style="@style/Widget.Trip.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/retry" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+        <ProgressBar android:id="@+id/loadingIndicator" android:layout_width="40dp" android:layout_height="40dp" android:layout_gravity="center" android:visibility="gone" android:indeterminateTint="@color/primary" />
+    </FrameLayout>
 </LinearLayout>

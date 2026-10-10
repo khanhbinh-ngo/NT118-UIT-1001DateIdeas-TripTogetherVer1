@@ -4,25 +4,30 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.triptogether.adapters.ActivityAdapter
+import com.example.triptogether.databinding.ActivityTripPlanBinding
 import com.example.triptogether.model.ActivityItem
 import com.example.triptogether.model.Trip
 import com.example.triptogether.ui.AddActivityDialogFragment
 import com.example.triptogether.ui.DeleteActivityDialogFragment
 import com.example.triptogether.ui.EditActivityDialogFragment
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.triptogether.ui.PlannerActivity
+import com.example.triptogether.ui.state.PlanViewModel
+import com.example.triptogether.ui.state.UiState
+import com.example.triptogether.ui.state.observe
+import com.example.triptogether.utilities.TripFilters
+import com.example.triptogether.utilities.tripExtra
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 
-class TripPlanActivity : AppCompatActivity() {
+class TripPlanActivity : PlannerActivity() {
+    private lateinit var binding: ActivityTripPlanBinding
 
     private lateinit var trip: Trip
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
+    private lateinit var model: PlanViewModel
 
     private lateinit var tvTripTitle: TextView
     private lateinit var rvActivities: RecyclerView
@@ -40,51 +45,81 @@ class TripPlanActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_trip_plan)
+        binding = ActivityTripPlanBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        auth = FirebaseAuth.getInstance()
-        val userId = auth.currentUser?.uid ?: return
-        database = FirebaseDatabase.getInstance().getReference("trips")
-        trip = intent.getSerializableExtra("trip") as Trip
+        model = androidx.lifecycle.ViewModelProvider(this)[PlanViewModel::class.java]
+        trip =
+            intent.tripExtra()
+                ?: run {
+                    finish()
+                    return
+                }
 
-        tvTripTitle = findViewById(R.id.tvTripTitle)
-        rvActivities = findViewById(R.id.rvActivities)
-        btnAddActivity = findViewById(R.id.btnAddActivity)
-        btnChange = findViewById(R.id.btnChange)
-        btnBack = findViewById(R.id.btnBack)
-        layoutDays = findViewById(R.id.dayTabsContainer)
-        btnPrevDays = findViewById(R.id.btnPrevDays)
-        btnNextDays = findViewById(R.id.btnNextDays)
+        tvTripTitle = binding.tvTripTitle
+        rvActivities = binding.rvActivities
+        btnAddActivity = binding.btnAddActivity
+        btnChange = binding.btnChange
+        btnBack = binding.btnBack
+        layoutDays = binding.dayTabsContainer
+        btnPrevDays = binding.btnPrevDays
+        btnNextDays = binding.btnNextDays
 
         tvTripTitle.text = trip.name
         dayList = generateDateRange(trip.startDate, trip.endDate)
 
+        if (dayList.isEmpty()) {
+            toast(R.string.invalid_trip_dates)
+            finish()
+            return
+        }
+
+        selectedDayIndex =
+            (savedInstanceState?.getInt("selectedDay") ?: 0).coerceIn(dayList.indices)
+        currentDayWindowStart = selectedDayIndex / 3 * 3
         setupDayTabs()
 
-        activityAdapter = ActivityAdapter { activity, key ->
-            showEditDeleteOptions(activity, key)
-        }
+        activityAdapter = ActivityAdapter { activity, key -> showEditDeleteOptions(activity, key) }
 
         rvActivities.layoutManager = LinearLayoutManager(this)
         rvActivities.adapter = activityAdapter
 
+        model.items.observe(this) { state ->
+            when (state) {
+                UiState.Loading -> showState(loading = true)
+                UiState.Error ->
+                    showState(
+                        message = getString(R.string.load_error),
+                        retry = { loadActivitiesForDay(selectedDayIndex) },
+                    )
+                is UiState.Content -> {
+                    activityAdapter.submitList(state.data)
+                    showState(
+                        message =
+                            if (state.data.isEmpty()) getString(R.string.no_activities) else null
+                    )
+                }
+            }
+        }
+        supportFragmentManager.setFragmentResultListener("planChanged", this) { _, _ ->
+            loadActivitiesForDay(selectedDayIndex)
+        }
         loadActivitiesForDay(selectedDayIndex)
 
         btnAddActivity.setOnClickListener {
-            AddActivityDialogFragment(
-                tripId = trip.id,
-                createdBy = trip.createdBy,
-                dayIndex = selectedDayIndex,
-                onActivityAdded = {
-                    loadActivitiesForDay(selectedDayIndex)
-                }
-            ).show(supportFragmentManager, "AddActivityDialog")
+            AddActivityDialogFragment.newInstance(
+                    tripId = trip.id,
+                    createdBy = trip.createdBy,
+                    dayIndex = selectedDayIndex,
+                )
+                .show(supportFragmentManager, "AddActivityDialog")
         }
 
         btnChange.setOnClickListener {
-            val options = arrayOf("Edit existing activity", "Delete existing activity")
+            val options =
+                arrayOf(getString(R.string.edit_activity), getString(R.string.delete_activity))
             AlertDialog.Builder(this)
-                .setTitle("What would you like to do?")
+                .setTitle(R.string.choose_action)
                 .setItems(options) { _, which ->
                     if (which == 0) promptEditActivity() else promptDeleteActivity()
                 }
@@ -108,6 +143,11 @@ class TripPlanActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt("selectedDay", selectedDayIndex)
+        super.onSaveInstanceState(outState)
+    }
+
     private fun setupDayTabs() {
         layoutDays.removeAllViews()
 
@@ -119,15 +159,11 @@ class TripPlanActivity : AppCompatActivity() {
             val tvDayNumber = view.findViewById<TextView>(R.id.tvDayNumber)
             val tvDayDate = view.findViewById<TextView>(R.id.tvDayDate)
 
-            tvDayNumber.text = "Day ${i + 1}"
+            tvDayNumber.text = getString(R.string.day_number, i + 1)
             tvDayDate.text = formatDate(dayList[i])
 
-            view.setBackgroundResource(
-                if (i == selectedDayIndex)
-                    R.drawable.bg_day_selected
-                else
-                    R.drawable.bg_day_unselected
-            )
+            view.isSelected = i == selectedDayIndex
+            view.setBackgroundResource(R.drawable.bg_tab)
 
             view.setOnClickListener {
                 selectedDayIndex = i
@@ -144,125 +180,82 @@ class TripPlanActivity : AppCompatActivity() {
     }
 
     private fun loadActivitiesForDay(dayIndex: Int) {
-        val dayKey = "day$dayIndex"
-        val ref = database.child(trip.createdBy).child(trip.id).child("plan").child(dayKey)
-
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val activities = mutableListOf<ActivityItem>()
-                val keys = mutableListOf<String>()
-
-                for (child in snapshot.children) {
-                    val item = child.getValue(ActivityItem::class.java)
-                    val key = child.key
-                    if (item != null && key != null) {
-                        activities.add(item)
-                        keys.add(key)
-                    }
-                }
-
-                val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-                val sorted = activities.zip(keys).sortedBy { (a, _) -> formatter.parse(a.time) }
-                val sortedActivities = sorted.map { it.first }
-                val sortedKeys = sorted.map { it.second }
-
-                activityAdapter.updateData(sortedActivities, sortedKeys)
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
+        model.load(trip.createdBy, trip.id, dayIndex)
     }
 
     private fun promptEditActivity() {
         val items = activityAdapter.getCurrentItems()
         if (items.isEmpty()) {
-            showToast("No activities to edit.")
+            toast(R.string.no_activities)
             return
         }
         val options = items.map { "${it.first.time} - ${it.first.description}" }.toTypedArray()
         AlertDialog.Builder(this)
-            .setTitle("Choose activity to edit:")
+            .setTitle(R.string.choose_edit_activity)
             .setItems(options) { _, index ->
                 showEditActivityDialog(items[index].first, items[index].second)
-            }.show()
+            }
+            .show()
     }
 
     private fun promptDeleteActivity() {
         val items = activityAdapter.getCurrentItems()
         if (items.isEmpty()) {
-            showToast("No activities to delete.")
+            toast(R.string.no_activities)
             return
         }
         val options = items.map { "${it.first.time} - ${it.first.description}" }.toTypedArray()
         AlertDialog.Builder(this)
-            .setTitle("Choose activity to delete:")
-            .setItems(options) { _, index ->
-                showDeleteActivityDialog(items[index].second)
-            }.show()
+            .setTitle(R.string.choose_delete_activity)
+            .setItems(options) { _, index -> showDeleteActivityDialog(items[index].second) }
+            .show()
     }
 
     private fun showEditActivityDialog(activity: ActivityItem, key: String) {
-        EditActivityDialogFragment(
-            tripId = trip.id,
-            createdBy = trip.createdBy,
-            dayIndex = selectedDayIndex,
-            activityKey = key,
-            currentActivity = activity,
-            onUpdated = {
-                loadActivitiesForDay(selectedDayIndex)
-            }
-        ).show(supportFragmentManager, "EditActivityDialog")
+        EditActivityDialogFragment.newInstance(
+                tripId = trip.id,
+                createdBy = trip.createdBy,
+                dayIndex = selectedDayIndex,
+                activityKey = key,
+                currentActivity = activity,
+            )
+            .show(supportFragmentManager, "EditActivityDialog")
     }
 
     private fun showDeleteActivityDialog(key: String) {
-        DeleteActivityDialogFragment(
-            tripId = trip.id,
-            createdBy = trip.createdBy,
-            dayIndex = selectedDayIndex,
-            activityKey = key,
-            onDeleted = {
-                showToast("Activity deleted successfully.")
-                loadActivitiesForDay(selectedDayIndex)
-            }
-        ).show(supportFragmentManager, "DeleteActivityDialog")
+        DeleteActivityDialogFragment.newInstance(
+                tripId = trip.id,
+                createdBy = trip.createdBy,
+                dayIndex = selectedDayIndex,
+                activityKey = key,
+            )
+            .show(supportFragmentManager, "DeleteActivityDialog")
     }
 
     private fun generateDateRange(startDate: String, endDate: String): List<String> {
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val start = sdf.parse(startDate) ?: return emptyList()
-        val end = sdf.parse(endDate) ?: return emptyList()
-
-        val dates = mutableListOf<String>()
-        val cal = Calendar.getInstance().apply { time = start }
-
-        while (!cal.time.after(end)) {
-            dates.add(sdf.format(cal.time))
-            cal.add(Calendar.DATE, 1)
-        }
-        return dates
+        val start = TripFilters.date(startDate) ?: return emptyList()
+        val end = TripFilters.date(endDate) ?: return emptyList()
+        if (end.isBefore(start) || ChronoUnit.DAYS.between(start, end) > 3650) return emptyList()
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu", Locale.US)
+        return generateSequence(start) { it.plusDays(1) }
+            .takeWhile { !it.isAfter(end) }
+            .map { it.format(formatter) }
+            .toList()
     }
 
-    private fun formatDate(date: String): String {
-        val input = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val output = SimpleDateFormat("dd MMM", Locale.getDefault())
-        return try {
-            output.format(input.parse(date) ?: return date)
-        } catch (e: Exception) {
-            date
-        }
-    }
-
-    private fun showToast(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-    }
+    private fun formatDate(date: String): String =
+        TripFilters.date(date)?.format(DateTimeFormatter.ofPattern("dd MMM", Locale.getDefault()))
+            ?: date
 
     private fun showEditDeleteOptions(activity: ActivityItem, key: String) {
-        val options = arrayOf("Edit", "Delete")
+        val options =
+            arrayOf(getString(R.string.edit_activity), getString(R.string.delete_activity))
         AlertDialog.Builder(this)
-            .setTitle("Choose action")
+            .setTitle(R.string.choose_action)
             .setItems(options) { _, which ->
                 if (which == 0) showEditActivityDialog(activity, key)
                 else showDeleteActivityDialog(key)
-            }.show()
+            }
+            .show()
     }
 }
