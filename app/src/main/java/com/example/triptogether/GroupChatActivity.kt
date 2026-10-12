@@ -1,86 +1,84 @@
 package com.example.triptogether
 
 import android.os.Bundle
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.triptogether.adapters.ChatMessageAdapter
-import com.example.triptogether.model.ChatMessage
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.example.triptogether.data.AuthRepository
+import com.example.triptogether.databinding.ActivityGroupChatBinding
+import com.example.triptogether.ui.PlannerActivity
+import com.example.triptogether.ui.state.ActionState
+import com.example.triptogether.ui.state.ChatViewModel
+import com.example.triptogether.ui.state.UiState
+import com.example.triptogether.ui.state.observe
 
-class GroupChatActivity : AppCompatActivity() {
-
-    private lateinit var chatRef: DatabaseReference
-    private lateinit var rvMessages: RecyclerView
-    private lateinit var adapter: ChatMessageAdapter
-    private val messageList = mutableListOf<ChatMessage>()
-
-    private lateinit var tripId: String
-    private lateinit var userId: String
+class GroupChatActivity : PlannerActivity() {
+    private lateinit var model: ChatViewModel
+    private var tripId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_group_chat)
-
-        tripId = intent.getStringExtra("tripId") ?: return
-        val tripName = intent.getStringExtra("tripName") ?: "Group Chat"
-        userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
-        findViewById<TextView>(R.id.tvChatTitle).text = tripName
-
-        rvMessages = findViewById(R.id.rvMessages)
-        val etMessage = findViewById<EditText>(R.id.etMessage)
-        val btnSend = findViewById<ImageButton>(R.id.btnSend)
-
-        adapter = ChatMessageAdapter(messageList)
-        rvMessages.layoutManager = LinearLayoutManager(this)
-        rvMessages.adapter = adapter
-
-        chatRef = FirebaseDatabase.getInstance().getReference("chats").child(tripId)
-
-        // Load messages and then update lastSeen
-        chatRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                messageList.clear()
-                for (child in snapshot.children) {
-                    val msg = child.getValue(ChatMessage::class.java)
-                    msg?.let { messageList.add(it) }
+        val binding = ActivityGroupChatBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        tripId = intent.getStringExtra("tripId").orEmpty()
+        if (tripId.isBlank()) {
+            finish()
+            return
+        }
+        model = ViewModelProvider(this)[ChatViewModel::class.java]
+        val adapter =
+            ChatMessageAdapter(
+                currentEmail = AuthRepository().currentUser?.email,
+                currentUid = AuthRepository().currentUser?.uid,
+            )
+        binding.rvMessages.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
+        binding.rvMessages.adapter = adapter
+        binding.tvChatTitle.text =
+            intent.getStringExtra("tripName") ?: getString(R.string.group_chat)
+        binding.btnSend.setOnClickListener {
+            val text = binding.etMessage.text.toString().trim()
+            if (text.isNotBlank()) model.send(tripId, text)
+        }
+        model.messages.observe(this) { state ->
+            when (state) {
+                UiState.Loading -> showState(loading = true)
+                UiState.Error ->
+                    showState(
+                        message = getString(R.string.load_error),
+                        retry = { model.load(tripId) },
+                    )
+                is UiState.Content -> {
+                    adapter.submitList(state.data) {
+                        if (adapter.itemCount > 0)
+                            binding.rvMessages.scrollToPosition(adapter.itemCount - 1)
+                    }
+                    showState(
+                        message =
+                            if (state.data.isEmpty()) getString(R.string.no_messages) else null
+                    )
                 }
-                adapter.notifyDataSetChanged()
-                rvMessages.scrollToPosition(messageList.size - 1)
-
-                updateLastSeenTimestamp()
             }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
-
-        btnSend.setOnClickListener {
-            val text = etMessage.text.toString().trim()
-            val user = FirebaseAuth.getInstance().currentUser
-            if (text.isNotEmpty() && user != null) {
-                val msg = ChatMessage(user.email ?: "", text)
-                chatRef.push().setValue(msg)
-                etMessage.text.clear()
+        }
+        model.action.observe(this) { state ->
+            binding.btnSend.isEnabled = state != ActionState.Running
+            if (state == ActionState.Done) {
+                if (binding.etMessage.text.toString().trim() == model.sentText)
+                    binding.etMessage.text?.clear()
+                model.acknowledge()
+            } else if (state == ActionState.Error) {
+                toast(R.string.save_failed)
+                model.acknowledge()
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (::tripId.isInitialized && ::userId.isInitialized) {
-            updateLastSeenTimestamp()
-        }
+    override fun onStart() {
+        super.onStart()
+        if (::model.isInitialized) model.load(tripId)
     }
 
-    private fun updateLastSeenTimestamp() {
-        val lastSeenRef = FirebaseDatabase.getInstance()
-            .getReference("lastSeenChat")
-            .child(userId)
-            .child(tripId)
-
-        lastSeenRef.setValue(System.currentTimeMillis())
+    override fun onStop() {
+        if (::model.isInitialized) model.stop()
+        super.onStop()
     }
 }

@@ -1,58 +1,58 @@
 package com.example.triptogether
 
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.triptogether.adapters.DocumentAdapter
 import com.example.triptogether.databinding.ActivityDocumentsBinding
-import com.example.triptogether.model.SharedItem
-import com.google.firebase.database.*
+import com.example.triptogether.ui.PlannerActivity
+import com.example.triptogether.ui.state.FilesViewModel
+import com.example.triptogether.ui.state.UiState
+import com.example.triptogether.ui.state.observe
+import com.example.triptogether.utilities.openSharedDocument
 
-class DocumentsActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityDocumentsBinding
-    private lateinit var adapter: DocumentAdapter
-    private val documentList = mutableListOf<SharedItem>()
-
-    private lateinit var tripId: String
-    private val dbRef = FirebaseDatabase.getInstance().reference
+class DocumentsActivity : PlannerActivity() {
+    private lateinit var model: FilesViewModel
+    private var tripId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityDocumentsBinding.inflate(layoutInflater)
+        val binding = ActivityDocumentsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        tripId = intent.getStringExtra("tripId") ?: run {
-            Toast.makeText(this, "Trip ID missing", Toast.LENGTH_SHORT).show()
+        tripId = intent.getStringExtra("tripId").orEmpty()
+        if (tripId.isBlank()) {
             finish()
             return
         }
-
-        adapter = DocumentAdapter(documentList)
+        model = ViewModelProvider(this)[FilesViewModel::class.java]
+        val adapter = DocumentAdapter(onOpen = { openSharedDocument(it) })
         binding.rvDocuments.layoutManager = LinearLayoutManager(this)
         binding.rvDocuments.adapter = adapter
-
-        loadDocuments()
+        model.items.observe(this) { state ->
+            when (state) {
+                UiState.Loading -> showState(loading = true)
+                UiState.Error ->
+                    showState(
+                        message = getString(R.string.load_error),
+                        retry = { model.load(tripId, false) },
+                    )
+                is UiState.Content -> {
+                    adapter.submitList(state.data)
+                    showState(
+                        message = if (state.data.isEmpty()) getString(R.string.no_files) else null
+                    )
+                }
+            }
+        }
     }
 
-    private fun loadDocuments() {
-        dbRef.child("tripDocuments").child(tripId)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    documentList.clear()
-                    for (docSnap in snapshot.children) {
-                        val doc = docSnap.getValue(SharedItem::class.java)
-                        if (doc != null) {
-                            documentList.add(doc)
-                        }
-                    }
-                    adapter.notifyDataSetChanged()
-                }
+    override fun onStart() {
+        super.onStart()
+        if (::model.isInitialized) model.load(tripId, false)
+    }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@DocumentsActivity, "Failed to load documents", Toast.LENGTH_SHORT).show()
-                }
-            })
+    override fun onStop() {
+        if (::model.isInitialized) model.stop()
+        super.onStop()
     }
 }

@@ -1,22 +1,21 @@
 package com.example.triptogether.adapters
 
-import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.triptogether.R
 import com.example.triptogether.model.SharedItem
-import java.text.SimpleDateFormat
 import java.util.*
 
 class DocumentAdapter(
-    private val documentList: List<SharedItem>
-) : RecyclerView.Adapter<DocumentAdapter.DocumentViewHolder>() {
+    documentList: List<SharedItem> = emptyList(),
+    private val onOpen: (SharedItem) -> Unit = {},
+) : ListAdapter<SharedItem, DocumentAdapter.DocumentViewHolder>(Diff) {
 
     class DocumentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileIcon: ImageView = itemView.findViewById(R.id.ivFileIcon)
@@ -24,49 +23,57 @@ class DocumentAdapter(
         val fileInfo: TextView = itemView.findViewById(R.id.tvFileInfo)
     }
 
+    init {
+        submitList(documentList.toList())
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_document, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_document, parent, false)
         return DocumentViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: DocumentViewHolder, position: Int) {
-        val document = documentList[position]
+        val document = getItem(position)
 
         holder.fileName.text = document.name
 
-        val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
-        val dateStr = sdf.format(Date(document.timestamp))
-        holder.fileInfo.text = buildString {
-        append("Uploaded by ")
-        append(document.uploadedBy)
-        append(" • ")
-        append(dateStr)
-    }
+        val dateStr =
+            java.time.Instant.ofEpochMilli(document.timestamp)
+                .atZone(java.time.ZoneId.systemDefault())
+                .format(
+                    java.time.format.DateTimeFormatter.ofPattern(
+                        "dd MMM yyyy, HH:mm",
+                        Locale.getDefault(),
+                    )
+                )
+        holder.fileInfo.text =
+            holder.itemView.context.getString(
+                R.string.file_uploaded_by,
+                document.uploadedBy,
+                dateStr,
+            )
 
-        val extension = MimeTypeMap.getFileExtensionFromUrl(document.url).lowercase(Locale.ROOT)
+        val extension = document.name.substringAfterLast('.', "").lowercase(Locale.ROOT)
 
-        val iconRes = when (extension) {
-            "pdf" -> R.drawable.ic_pdf
-            "jpg", "jpeg", "png" -> R.drawable.ic_image
-            else -> R.drawable.ic_file
-        }
+        val iconRes =
+            when (extension) {
+                "pdf" -> R.drawable.ic_pdf
+                "jpg",
+                "jpeg",
+                "png" -> R.drawable.ic_image
+                else -> R.drawable.ic_file
+            }
         holder.fileIcon.setImageResource(iconRes)
 
-
-        holder.itemView.setOnClickListener {
-            val context = holder.itemView.context
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.parse(document.url), getMimeType(extension))
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-        }
+        holder.itemView.setOnClickListener { onOpen(document) }
     }
 
-    override fun getItemCount(): Int = documentList.size
+    private object Diff : DiffUtil.ItemCallback<SharedItem>() {
+        override fun areItemsTheSame(oldItem: SharedItem, newItem: SharedItem) =
+            oldItem.url == newItem.url
 
-    private fun getMimeType(extension: String): String {
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-            ?: "application/octet-stream"
+        override fun areContentsTheSame(oldItem: SharedItem, newItem: SharedItem) =
+            oldItem == newItem
     }
 }

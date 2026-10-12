@@ -1,29 +1,8 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="8dp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/message_bubble_bg">
-
-    <TextView
-        android:id="@+id/tvSender"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/blue_primary"
-        android:textStyle="bold"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/tvText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="@color/black" />
-
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/gray"
-        android:textSize="12sp" />
-</LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingTop="6dp" android:paddingBottom="6dp">
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:id="@+id/messageBubble" android:maxWidth="300dp" android:padding="16dp" android:background="@drawable/message_bubble_bg">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Caption" android:id="@+id/tvSender" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Body" android:id="@+id/tvText" android:layout_marginTop="6dp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Caption" android:id="@+id/tvTime" android:gravity="end" android:layout_marginTop="8dp" />
+    </LinearLayout>
+</FrameLayout>

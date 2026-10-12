@@ -1,11 +1,10 @@
 package com.example.triptogether
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
 import com.example.triptogether.databinding.ActivityImagePreviewBinding
+import com.example.triptogether.ui.PlannerActivity
 
-class ImagePreviewActivity : AppCompatActivity() {
+class ImagePreviewActivity : PlannerActivity() {
 
     private lateinit var binding: ActivityImagePreviewBinding
 
@@ -16,15 +15,17 @@ class ImagePreviewActivity : AppCompatActivity() {
 
         val imageUrl = intent.getStringExtra("imageUrl")
         if (imageUrl != null) {
-            Glide.with(this)
-                .load(imageUrl)
-                .into(binding.ivFullImage)
+            com.example.triptogether.drive.DriveImages.load(
+                binding.ivFullImage,
+                imageUrl,
+                R.drawable.ic_image_placeholder,
+                circle = false,
+                fit = true,
+            )
         } else {
             finish()
         }
 
-        binding.btnBack.setOnClickListener {
-            finish()
-        }
+        binding.btnBack.setOnClickListener { finish() }
     }
 }

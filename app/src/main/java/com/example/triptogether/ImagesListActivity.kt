@@ -2,66 +2,59 @@ package com.example.triptogether
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.triptogether.adapters.ImageAdapter
 import com.example.triptogether.databinding.ActivityImagesListBinding
-import com.example.triptogether.model.SharedItem
-import com.google.firebase.database.*
+import com.example.triptogether.ui.PlannerActivity
+import com.example.triptogether.ui.state.FilesViewModel
+import com.example.triptogether.ui.state.UiState
+import com.example.triptogether.ui.state.observe
 
-class ImagesListActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityImagesListBinding
-    private lateinit var adapter: ImageAdapter
-    private val imageList = mutableListOf<SharedItem>()
-
-    private lateinit var tripId: String
-    private val dbRef = FirebaseDatabase.getInstance().reference
+class ImagesListActivity : PlannerActivity() {
+    private lateinit var model: FilesViewModel
+    private var tripId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityImagesListBinding.inflate(layoutInflater)
+        val binding = ActivityImagesListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        tripId = intent.getStringExtra("tripId") ?: return
-
-        adapter = ImageAdapter(imageList) { imageUrl ->
-            val intent = Intent(this, ImagePreviewActivity::class.java)
-            intent.putExtra("imageUrl", imageUrl)
-            startActivity(intent)
+        tripId = intent.getStringExtra("tripId").orEmpty()
+        if (tripId.isBlank()) {
+            finish()
+            return
         }
-
-        binding.rvImages.layoutManager = GridLayoutManager(this, 3)
+        model = ViewModelProvider(this)[FilesViewModel::class.java]
+        val adapter = ImageAdapter { url ->
+            startActivity(Intent(this, ImagePreviewActivity::class.java).putExtra("imageUrl", url))
+        }
+        binding.rvImages.layoutManager = GridLayoutManager(this, 2)
         binding.rvImages.adapter = adapter
-
-        loadImages()
-    }
-
-    private fun loadImages() {
-        dbRef.child("tripImages").child(tripId)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    imageList.clear()
-                    for (docSnap in snapshot.children) {
-                        val doc = docSnap.getValue(SharedItem::class.java)
-                        if (doc != null && isImage(doc.url)) {
-                            imageList.add(doc)
-                        }
-                    }
-                    adapter.notifyDataSetChanged()
+        model.items.observe(this) { state ->
+            when (state) {
+                UiState.Loading -> showState(loading = true)
+                UiState.Error ->
+                    showState(
+                        message = getString(R.string.load_error),
+                        retry = { model.load(tripId, true) },
+                    )
+                is UiState.Content -> {
+                    adapter.submitList(state.data)
+                    showState(
+                        message = if (state.data.isEmpty()) getString(R.string.no_files) else null
+                    )
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@ImagesListActivity, "Failed to load images", Toast.LENGTH_SHORT).show()
-                }
-            })
+            }
+        }
     }
 
-
-    private fun isImage(url: String): Boolean {
-        val lowerUrl = url.lowercase()
-        return listOf(".jpg", ".jpeg", ".png").any { ext -> lowerUrl.contains(ext) }
+    override fun onStart() {
+        super.onStart()
+        if (::model.isInitialized) model.load(tripId, true)
     }
 
+    override fun onStop() {
+        if (::model.isInitialized) model.stop()
+        super.onStop()
+    }
 }
