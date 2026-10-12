@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#FFF8EF</color>
+    <color name="ink">#FFF8EF</color>
+    <color name="canvas">#0A2C22</color>
+    <color name="surface">#143E31</color>
+    <color name="surface_soft">#38544A</color>
+    <color name="peach">#594C3E</color>
+    <color name="accent">#FFAB79</color>
+    <color name="muted">#BDD1C6</color>
+    <color name="outline">#3A5747</color>
+    <color name="danger">#FFAAA3</color>
+    <color name="nav_icon">#8CAF9F</color>
+    <color name="black">#E5F3E9</color>
+    <color name="white">#FFFFFF</color>
+    <color name="blue_primary">#82C5A4</color>
+    <color name="blue_secondary">#E5F3E9</color>
+    <color name="blue_light">#294337</color>
+    <color name="blue_dark">#0E4535</color>
+    <color name="light_background">#10241C</color>
+    <color name="second_background">#294337</color>
+    <color name="gray">#B0C3B7</color>
+    <color name="gray_light">#3A5747</color>
+    <color name="brand">#125642</color>
+    <color name="on_brand">#FFF8EF</color>
+    <color name="panel">#244F3F</color>
+    <color name="field_fill">#38544A</color>
+</resources>

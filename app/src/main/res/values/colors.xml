@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="blue_primary">#7276ED</color>
-    <color name="blue_light">#AEB0E9</color>
-    <color name="blue_secondary">#4431B6</color>
+    <color name="primary">#125642</color>
+    <color name="ink">#125642</color>
+    <color name="canvas">#FFF8EF</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_soft">#CFD8CB</color>
+    <color name="peach">#F2D8CE</color>
+    <color name="accent">#FE8036</color>
+    <color name="muted">#657A70</color>
+    <color name="outline">#D7DFD7</color>
+    <color name="danger">#C84343</color>
+    <color name="nav_icon">#8CAF9F</color>
+    <color name="black">#0E4535</color>
+    <color name="white">#FFFFFF</color>
+    <color name="blue_primary">#125642</color>
+    <color name="blue_secondary">#0E4535</color>
+    <color name="blue_light">#D5E1D8</color>
+    <color name="blue_dark">#092A20</color>
     <color name="light_background">#FFF8EF</color>
-    <color name="second_background">#E0DFED</color>
-    <color name="gray">#999999</color>
-    <color name="light_black">#80000000</color>
-    <color name="gray_light">#BCB9B9</color>
-    <color name="purple_dot">#592FCE</color>
-    <color name="blue_dark">#2E218A</color>
+    <color name="second_background">#E6ECE5</color>
+    <color name="gray">#657A70</color>
+    <color name="gray_light">#D7DFD7</color>
+    <color name="light_black">#8C092A20</color>
+    <color name="purple_dot">#FE8036</color>
     <color name="green_dark">#125642</color>
     <color name="green_primary">#1F7A6B</color>
-
-
-
-
+    <color name="brand">#125642</color>
+    <color name="on_brand">#FFF8EF</color>
+    <color name="panel">#C5D1C4</color>
+    <color name="field_fill">#D0D8CD</color>
 </resources>
