@@ -1,78 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/favorites_trips"
-        android:textSize="@dimen/_24sp"
-        android:gravity="center"
-        android:padding="@dimen/default_16"
-        android:textStyle="bold"
-        android:textColor="@color/blue_primary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerFavorites"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <LinearLayout
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginBottom="@dimen/default_size"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:weightSum="3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageView
-            android:id="@+id/homeIcon"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_home"
-            android:contentDescription="@string/home"/>
-
-        <!--
-        <ImageView
-            android:id="@+id/clockIcon"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_clock"
-            android:contentDescription="@string/trips"/>
-        -->
-        <ImageView
-            android:id="@+id/heartIcon"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_heart_blue"
-            android:contentDescription="@string/favorites"/>
-
-        <ImageView
-            android:id="@+id/userIcon"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_user"
-            android:contentDescription="@string/profile"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/canvas" android:id="@+id/screenRoot">
+    <include layout="@layout/include_brand_header" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <Space android:layout_width="0dp" android:layout_height="0dp" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Title" android:text="@string/favorites" android:id="@+id/screenTitle" android:layout_weight="1" android:layout_marginStart="14dp" android:textSize="20sp" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Muted" android:text="@string/favorites_hint" android:layout_marginTop="12dp" />
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/recyclerFavorites" android:layout_width="match_parent" android:layout_height="match_parent" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="20dp" android:clipToPadding="false" />
+        <androidx.core.widget.NestedScrollView android:id="@+id/statePanel" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="24dp">
+                <androidx.appcompat.widget.AppCompatImageView android:id="@+id/stateIcon" android:layout_width="64dp" android:layout_height="64dp" android:src="@drawable/ic_ui_trips" app:tint="@color/muted" android:importantForAccessibility="no" />
+                <Space android:layout_width="1dp" android:layout_height="16dp" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Subtitle" android:text="@string/no_trips_yet" android:id="@+id/stateMessage" android:gravity="center" />
+                <Space android:layout_width="1dp" android:layout_height="16dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnRetry" style="@style/Widget.Trip.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/retry" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+        <ProgressBar android:id="@+id/loadingIndicator" android:layout_width="40dp" android:layout_height="40dp" android:layout_gravity="center" android:visibility="gone" android:indeterminateTint="@color/primary" />
+    </FrameLayout>
+    <include layout="@layout/include_bottom_navigation" />
+</LinearLayout>

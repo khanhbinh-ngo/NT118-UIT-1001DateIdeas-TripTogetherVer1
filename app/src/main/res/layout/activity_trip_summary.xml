@@ -1,191 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/light_background">
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/default_16">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Trip image header -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_200dp"
-                android:layout_marginBottom="@dimen/_16dp">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/ivTripImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:background="@drawable/default_trip_image" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/btnBack"
-                    android:layout_width="@dimen/_32dp"
-                    android:layout_height="@dimen/_32dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_margin="@dimen/_12dp"
-                    android:padding="6dp"
-                    android:src="@drawable/ic_back" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/btnFavorite"
-                    android:layout_width="@dimen/_32dp"
-                    android:layout_height="@dimen/_32dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_margin="@dimen/_12dp"
-                    android:padding="6dp"
-                    android:src="@drawable/ic_fav" />
-            </RelativeLayout>
-
-            <!-- Trip identity -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginBottom="12dp">
-
-                <TextView
-                    android:id="@+id/tvTheTripName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/trip_name"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black" />
-
-                <TextView
-                    android:id="@+id/tvCountry"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/country_name"
-                    android:textSize="14sp"
-                    android:textColor="@color/gray" />
-            </LinearLayout>
-
-            <!-- Tabs -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginBottom="12dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/overviewTab"
-                    android:textStyle="bold"
-                    android:textColor="@color/blue_primary"
-                    android:textSize="@dimen/default_size"
-                    android:layout_marginEnd="24dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/mapTab"
-                    android:text="@string/details"
-                    android:textColor="@color/gray"
-                    android:textSize="@dimen/default_size"
-                    android:clickable="true"
-                    android:focusable="true" />
-            </LinearLayout>
-
-            <!-- Meta info -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_calendar"
-                    android:layout_marginEnd="8dp" />
-
-                <TextView
-                    android:id="@+id/tvDates"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/start_date_end_date"
-                    android:textColor="@color/black"
-                    android:layout_marginEnd="16dp" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_users"
-                    android:layout_marginEnd="8dp" />
-
-                <TextView
-                    android:id="@+id/tvMembers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/default_amount"
-                    android:textColor="@color/black"
-                    android:clickable="true"
-                    android:focusable="true" />
-            </LinearLayout>
-
-            <!-- Description -->
-            <TextView
-                android:id="@+id/tvDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/description_about_the_trip"
-                android:textColor="@color/gray"
-                android:textSize="@dimen/_14sp"
-                android:lineSpacingExtra="4dp"
-                android:layout_marginBottom="20dp" />
-
-            <!-- Actions -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:weightSum="2">
-
-                <Button
-                    android:id="@+id/btnChat"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/chat"
-                    android:backgroundTint="@color/blue_secondary"
-                    android:textColor="@color/light_background" />
-
-                <Button
-                    android:id="@+id/btnEnterPlan"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="12dp"
-                    android:text="@string/enter_the_plan"
-                    android:backgroundTint="@color/blue_primary"
-                    android:textColor="@color/light_background" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnDocuments"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/documents"
-                android:backgroundTint="@color/blue_light"
-                android:textColor="@color/blue_secondary" />
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/canvas" android:id="@+id/screenRoot">
+    <include layout="@layout/include_brand_header" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <androidx.appcompat.widget.AppCompatImageView android:id="@+id/btnBack" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_ui_back" android:padding="12dp" android:background="@drawable/bg_icon" android:contentDescription="@string/back" android:clickable="true" android:focusable="true" android:visibility="gone" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Title" android:text="@string/trip_overview" android:id="@+id/screenTitle" android:layout_weight="1" android:layout_marginStart="14dp" android:textSize="20sp" />
         </LinearLayout>
-    </ScrollView>
-</RelativeLayout>
+    </LinearLayout>
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true" android:clipToPadding="false">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="24dp" android:paddingEnd="24dp" android:paddingBottom="24dp">
+            <FrameLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                <com.google.android.material.imageview.ShapeableImageView android:id="@+id/ivTripImage" android:layout_width="match_parent" android:layout_height="212dp" android:scaleType="centerCrop" android:src="@drawable/default_trip_image" android:contentDescription="@string/trip_photo" app:shapeAppearanceOverlay="@style/Shape.Trip.Image" />
+                <androidx.appcompat.widget.AppCompatImageView android:id="@+id/btnFavorite" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_ui_heart" android:padding="12dp" android:background="@drawable/bg_icon" android:contentDescription="@string/favorites" android:clickable="true" android:focusable="true" android:layout_gravity="top|end" android:layout_margin="12dp" />
+            </FrameLayout>
+            <Space android:layout_width="1dp" android:layout_height="22dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Title" android:id="@+id/tvTheTripName" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Subtitle" android:id="@+id/tvCountry" android:layout_marginTop="6dp" />
+            <Space android:layout_width="1dp" android:layout_height="20dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp" android:background="@drawable/bg_soft">
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Caption" android:text="@string/travel_dates" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Body" android:id="@+id/tvDates" android:layout_marginTop="5dp" />
+                <Space android:layout_width="1dp" android:layout_height="14dp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                    <androidx.appcompat.widget.AppCompatImageView android:id="@+id/icUsers" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_ui_user" android:padding="12dp" android:background="@drawable/bg_icon" android:contentDescription="@string/travel_together" android:clickable="true" android:focusable="true" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Body" android:id="@+id/tvMembers" android:layout_weight="1" android:layout_marginStart="12dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Caption" android:text="@string/view_members" />
+                </LinearLayout>
+            </LinearLayout>
+            <Space android:layout_width="1dp" android:layout_height="20dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Muted" android:id="@+id/tvDescription" />
+            <Space android:layout_width="1dp" android:layout_height="24dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Subtitle" android:text="@string/make_it_yours" />
+            <Space android:layout_width="1dp" android:layout_height="14dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnEnterPlan" style="@style/Widget.Trip.Button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/view_itinerary" />
+            <Space android:layout_width="1dp" android:layout_height="12dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnChat" style="@style/Widget.Trip.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/group_chat" />
+            <Space android:layout_width="1dp" android:layout_height="12dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnDocuments" style="@style/Widget.Trip.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shared_files" />
+            <Space android:layout_width="1dp" android:layout_height="12dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Button" android:text="@string/view_map" android:id="@+id/mapTab" android:minHeight="56dp" android:gravity="center" android:background="@drawable/bg_peach" android:clickable="true" android:focusable="true" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

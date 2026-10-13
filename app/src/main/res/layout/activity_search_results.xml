@@ -1,45 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/light_background"
-    android:padding="20dp">
-
-    <!-- Top Bar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <ImageView
-            android:id="@+id/btnBackSearch"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:padding="6dp"
-            android:src="@drawable/ic_back"
-            android:contentDescription="@string/backs"/>
-
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="@string/search_results"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/blue_primary"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/canvas" android:id="@+id/screenRoot">
+    <include layout="@layout/include_brand_header" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <androidx.appcompat.widget.AppCompatImageView android:id="@+id/btnBackSearch" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_ui_back" android:padding="12dp" android:background="@drawable/bg_icon" android:contentDescription="@string/back" android:clickable="true" android:focusable="true" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Title" android:text="@string/search_results" android:id="@+id/screenTitle" android:layout_weight="1" android:layout_marginStart="14dp" android:textSize="20sp" />
+        </LinearLayout>
     </LinearLayout>
-
-    <!-- Results -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvResults"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="12dp"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="24dp" android:paddingEnd="24dp" android:paddingBottom="16dp">
+        <com.google.android.material.textfield.TextInputLayout style="@style/Widget.Trip.Input" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/search_trips" android:layout_marginBottom="10dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/resultQuery" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="text" android:minHeight="56dp" android:padding="16dp" android:textSize="16sp" android:textColor="@color/ink" android:textColorHint="@color/muted" android:imeOptions="actionSearch" android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Muted" android:text="@string/all_trips" android:id="@+id/resultsCount" android:layout_weight="1" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnFilter" style="@style/Widget.Trip.Button.Secondary" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/filter" app:icon="@drawable/ic_ui_filter" />
+        </LinearLayout>
+    </LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvResults" android:layout_width="match_parent" android:layout_height="match_parent" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="20dp" android:clipToPadding="false" />
+        <androidx.core.widget.NestedScrollView android:id="@+id/statePanel" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="24dp">
+                <androidx.appcompat.widget.AppCompatImageView android:id="@+id/stateIcon" android:layout_width="64dp" android:layout_height="64dp" android:src="@drawable/ic_ui_trips" app:tint="@color/muted" android:importantForAccessibility="no" />
+                <Space android:layout_width="1dp" android:layout_height="16dp" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Subtitle" android:text="@string/no_trips_yet" android:id="@+id/stateMessage" android:gravity="center" />
+                <Space android:layout_width="1dp" android:layout_height="16dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btnRetry" style="@style/Widget.Trip.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/retry" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+        <ProgressBar android:id="@+id/loadingIndicator" android:layout_width="40dp" android:layout_height="40dp" android:layout_gravity="center" android:visibility="gone" android:indeterminateTint="@color/primary" />
+    </FrameLayout>
 </LinearLayout>
