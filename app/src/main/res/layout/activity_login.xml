@@ -1,10 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".LoginActivity">
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/canvas" android:id="@+id/screenRoot">
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true" android:clipToPadding="false">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="24dp" android:paddingEnd="24dp" android:paddingBottom="24dp">
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnBackScreen" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/auth_back_to_welcome" android:textColor="@color/ink" app:icon="@drawable/ic_ui_back" app:iconTint="@color/ink" />
+            <androidx.appcompat.widget.AppCompatImageView android:layout_width="80dp" android:layout_height="66dp" android:layout_gravity="center_horizontal" android:layout_marginTop="40dp" android:src="@drawable/brand_logo" android:scaleType="fitCenter" android:contentDescription="@string/app_name" app:tint="@color/ink" />
+            <Space android:layout_width="1dp" android:layout_height="32dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Title" android:text="@string/login_title" android:id="@+id/authTitle" android:textSize="20sp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Muted" android:text="@string/login_hint" android:id="@+id/authSubtitle" android:layout_marginTop="8dp" android:textSize="12sp" />
+            <Space android:layout_width="1dp" android:layout_height="28dp" />
+            <LinearLayout android:id="@+id/registerNameGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+                <com.google.android.material.textfield.TextInputLayout style="@style/Widget.Trip.Input" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/name" android:layout_marginBottom="14dp">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/authName" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPersonName" android:minHeight="56dp" android:padding="16dp" android:textSize="16sp" android:textColor="@color/ink" android:textColorHint="@color/muted" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout style="@style/Widget.Trip.Input" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/email" android:layout_marginBottom="14dp">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/authEmail" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textEmailAddress" android:minHeight="56dp" android:padding="16dp" android:textSize="16sp" android:textColor="@color/ink" android:textColorHint="@color/muted" android:autofillHints="emailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout style="@style/Widget.Trip.Input" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/password" app:endIconMode="password_toggle" android:layout_marginBottom="14dp">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/authPassword" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPassword" android:minHeight="56dp" android:padding="16dp" android:textSize="16sp" android:textColor="@color/ink" android:textColorHint="@color/muted" android:autofillHints="password" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <LinearLayout android:id="@+id/registerConfirmGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+                <com.google.android.material.textfield.TextInputLayout style="@style/Widget.Trip.Input" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/confirm_password" android:layout_marginBottom="14dp">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/authConfirm" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPassword" android:minHeight="56dp" android:padding="16dp" android:textSize="16sp" android:textColor="@color/ink" android:textColorHint="@color/muted" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Button" android:text="@string/forgot_password" android:id="@+id/btnForgotPassword" android:minHeight="48dp" android:gravity="start" android:clickable="true" android:focusable="true" android:textSize="12sp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Muted" android:id="@+id/authError" android:textColor="@color/danger" android:visibility="gone" android:layout_marginBottom="12dp" />
+            <ProgressBar android:id="@+id/authProgress" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" android:visibility="gone" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnSignIn" style="@style/Widget.Trip.Button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/sign_in" />
+            <Space android:layout_width="1dp" android:layout_height="14dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnToggleRegister" style="@style/Widget.Trip.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/create_account" />
+            <Space android:layout_width="1dp" android:layout_height="24dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Caption" android:text="@string/or_continue_with" android:gravity="center" />
+            <Space android:layout_width="1dp" android:layout_height="16dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnGoogleSignIn" style="@style/Widget.Trip.Button.Secondary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/continue_google" app:backgroundTint="@color/surface" app:cornerRadius="6dp" />
+            <Space android:layout_width="1dp" android:layout_height="32dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Trip.Caption" android:text="@string/login_footer" android:gravity="center" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>
