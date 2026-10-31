@@ -21,7 +21,9 @@
 
 TPHCM, tháng 10 năm 2026.
 
-> Bản Markdown đầy đủ được xuất từ báo cáo LaTeX có cấu trúc theo mẫu NT118. Nội dung đối chiếu mã nguồn tại revision `633e50d`; cập nhật định dạng Markdown ngày 30/10/2026. Ảnh render/fixture phục vụ minh họa UI, không thay cho nghiệm thu Firebase và Drive thật. Định dạng Markdown dành cho xem trên GitHub; dùng PDF A4 local để in với bố cục đã kiểm tra.
+> Báo cáo trình bày phiên bản TripTogether tại mã nguồn `633e50d`, theo cấu trúc mẫu NT118 được cung cấp [[7]](#tai-lieu-7). Các ảnh minh họa được lấy từ bộ kiểm tra giao diện cục bộ; kết quả kiểm thử và những phần cần kiểm chứng thêm được nêu trong mục 3.2. Bản Markdown được biên tập ngày 30/10/2026 để đọc trên GitHub; bản PDF A4 được lưu riêng để in.
+
+> **Quy ước trình bày:** Bảng và hình được đánh số theo chương, chẳng hạn Bảng 2.1 là bảng thứ nhất của Chương 2. Ký hiệu [n] dẫn đến tài liệu tham khảo ở cuối báo cáo; FR01–FR10 là mã yêu cầu chức năng, E01–E12 là mã kịch bản nghiệm thu.
 
 ## MỤC LỤC
 
@@ -38,6 +40,48 @@ TPHCM, tháng 10 năm 2026.
   - [3.1. Sơ đồ phân rã chức năng.](#muc-3-1)
   - [3.2. Cơ sở dữ liệu.](#muc-3-2)
 
+<details>
+<summary>Danh mục bảng và hình</summary>
+
+**Danh mục bảng**
+
+- [Bảng 1.1. Phạm vi chức năng](#bang-1-1)
+- [Bảng 1.2. Thông tin kỹ thuật của phiên bản báo cáo](#bang-1-2)
+- [Bảng 2.1. Phiên bản trích từ cấu hình dự án](#bang-2-1)
+- [Bảng 2.2. Danh mục yêu cầu chức năng](#bang-2-2)
+- [Bảng 2.3. Màn hình và thao tác chính](#bang-2-3)
+- [Bảng 3.1. Các lớp chính và trách nhiệm](#bang-3-1)
+- [Bảng 3.2. Hồ sơ người dùng tại `users/{uid}`](#bang-3-2)
+- [Bảng 3.3. Chuyến đi tại `trips/{creatorUid}/{tripId}`](#bang-3-3)
+- [Bảng 3.4. Các node quyền và tham chiếu](#bang-3-4)
+- [Bảng 3.5. Các trường dùng chung cho chat và file](#bang-3-5)
+- [Bảng 3.6. Quyền theo vai trò của một trip](#bang-3-6)
+- [Bảng 3.7. Phân bố dữ liệu và thời gian tồn tại](#bang-3-7)
+- [Bảng 3.8. Kết quả có bằng chứng cục bộ](#bang-3-8)
+- [Bảng 3.9. Ma trận nghiệm thu ba tài khoản](#bang-3-9)
+- [Bảng 3.10. File kiểm chứng theo chủ đề](#bang-3-10)
+
+**Danh mục hình**
+
+- [Hình 2.1. Màn chọn xác thực và Home với dữ liệu minh họa](#hinh-2-1)
+- [Hình 2.2. Yêu thích và tổng quan chuyến đi](#hinh-2-2)
+- [Hình 2.3. Account và FAQ khi chạy HelpSupportActivity](#hinh-2-3)
+- [Hình 2.4. Kiểm tra night mode với fontScale 1.3](#hinh-2-4)
+- [Hình 2.5. Giao diện tạo chuyến đi và lịch trình; ảnh render cục bộ](#hinh-2-5)
+- [Hình 2.6. Giao diện quản lý thành viên; ảnh render cục bộ](#hinh-2-6)
+- [Hình 2.7. Giao diện chat và thư viện nội dung; ảnh render cục bộ](#hinh-2-7)
+- [Hình 2.8. Giao diện ảnh và tài liệu PDF; ảnh render cục bộ](#hinh-2-8)
+- [Hình 2.9. Giao diện xem ảnh và bản đồ; ảnh render cục bộ](#hinh-2-9)
+- [Hình 2.10. Giao diện hồ sơ và tìm kiếm; ảnh render cục bộ](#hinh-2-10)
+- [Hình 2.11. Giao diện cài đặt ban ngày và thông báo; ảnh render cục bộ](#hinh-2-11)
+- [Hình 2.12. Giao diện đăng nhập và khôi phục mật khẩu; ảnh render cục bộ](#hinh-2-12)
+- [Hình 3.1. Các nhóm chức năng của TripTogether](#hinh-3-1)
+- [Hình 3.2. Kiến trúc ứng dụng và các dịch vụ bên ngoài](#hinh-3-2)
+- [Hình 3.3. Quan hệ logic giữa tài khoản chuyến đi và nội dung](#hinh-3-3)
+- [Hình 3.4. Các bước lưu file và nhánh phục hồi khi metadata lỗi](#hinh-3-4)
+
+</details>
+
 <a id="muc-1"></a>
 
 ## Chương 1. Giới thiệu.
@@ -46,23 +90,29 @@ TPHCM, tháng 10 năm 2026.
 
 ### 1.1. Lý do chọn đề tài.
 
-Khi tổ chức chuyến đi theo nhóm, thông tin thường nằm rải rác trong đoạn chat, ghi chú cá nhân và các thư mục ảnh. Thành viên khó biết lịch trình mới nhất, danh sách người tham gia hoặc vị trí của tài liệu cần dùng. TripTogether gom những thông tin này theo từng chuyến đi, giúp chủ chuyến đi quản lý nhóm và các thành viên theo dõi kế hoạch chung trên điện thoại.
+Khi chuẩn bị một chuyến đi theo nhóm, mọi người thường trao đổi lịch trình qua tin nhắn, ghi chi phí trong ghi chú và lưu ảnh hoặc tài liệu ở nhiều nơi. Cách làm này khá thuận tiện lúc đầu, nhưng khi kế hoạch thay đổi, các thành viên dễ theo dõi nhầm thông tin hoặc bỏ sót nội dung cần thiết. Từ nhu cầu đó, nhóm lựa chọn xây dựng TripTogether để tập trung thông tin của từng chuyến đi và giúp các thành viên cùng theo dõi trên điện thoại.
 
-Đề tài phù hợp với môn Phát triển ứng dụng trên thiết bị di động vì kết hợp bố cục Android, vòng đời Activity, điều hướng bằng Intent, xử lý bất đồng bộ, xác thực và dữ liệu mạng. Phần chia sẻ nội dung còn đặt ra bài toán phân biệt dữ liệu cấu trúc với file nhị phân và phối hợp quyền truy cập giữa hai dịch vụ.
+Thông qua đề tài, nhóm vận dụng kiến thức của môn Phát triển ứng dụng trên thiết bị di động: xây dựng giao diện Android, điều hướng giữa các màn hình, xử lý vòng đời Activity và làm việc với dữ liệu qua mạng. Việc chia sẻ ảnh, tài liệu cũng đặt ra một yêu cầu cụ thể: dữ liệu chuyến đi và nội dung file phải được lưu đúng nơi, đồng thời kiểm soát được ai có quyền truy cập.
 
 <a id="muc-1-2"></a>
 
 ### 1.2. Mục tiêu.
 
-Mục tiêu thứ nhất là hoàn thiện luồng từ xác thực đến tạo và mở chuyến đi. Mục tiêu thứ hai là hỗ trợ cộng tác qua lịch trình theo ngày, quản lý thành viên, chat và thư viện nội dung. Mục tiêu thứ ba là trình bày dữ liệu bằng một hệ thống giao diện thống nhất, có phản hồi khi tải, khi danh sách rỗng và khi thao tác thất bại.
+Trong phạm vi đồ án, nhóm tập trung vào ba mục tiêu:
 
-Về kỹ thuật, nhóm tách Activity khỏi thao tác truy cập dữ liệu thông qua ViewModel và Repository, duy trì chỉ mục chuyến đi theo người dùng và sử dụng rules kiểm tra UID. Việc đánh giá tập trung vào hành vi có bằng chứng trong code và kiểm thử, đồng thời nêu rõ những giới hạn chưa được nghiệm thu trên cloud.
+1. Hoàn thiện luồng sử dụng từ đăng ký, đăng nhập đến tạo và theo dõi chuyến đi.
+2. Hỗ trợ các thành viên cùng xây dựng lịch trình, trao đổi tin nhắn và chia sẻ ảnh, tài liệu.
+3. Xây dựng giao diện thống nhất, dễ theo dõi và có thông báo rõ ràng khi đang tải, chưa có dữ liệu hoặc thao tác thất bại.
+
+Về kỹ thuật, nhóm tổ chức phần giao diện, quản lý trạng thái và truy cập dữ liệu thành các lớp Activity, ViewModel và Repository. Dữ liệu chuyến đi được tra cứu theo tài khoản; quyền truy cập được kiểm tra bằng UID và Security Rules. Báo cáo trình bày những gì đã triển khai trong mã nguồn, kết quả kiểm thử đã lưu và các hạng mục còn cần kiểm chứng khi chạy với dịch vụ thực tế.
 
 **Đối tượng sử dụng và phạm vi.**
 
 Đối tượng sử dụng là người tổ chức và thành viên của một nhóm du lịch nhỏ. Chủ chuyến đi tạo thông tin, mời người đã có tài khoản và thay đổi thành viên. Thành viên được cấp quyền có thể xem chuyến đi, chỉnh hoạt động, trò chuyện và thêm nội dung chia sẻ. Vai trò hiển thị trong hồ sơ cá nhân không phải quyền quản trị hệ thống.
 
-**Bảng 1. Phạm vi chức năng**
+<a id="bang-1-1"></a>
+
+**Bảng 1.1. Phạm vi chức năng**
 
 | Trong phiên bản cơ bản | Ngoài phạm vi hiện tại |
 | --- | --- |
@@ -73,17 +123,19 @@ Về kỹ thuật, nhóm tách Activity khỏi thao tác truy cập dữ liệu 
 
 **Phương pháp phát triển.**
 
-Quá trình triển khai đi từ kiểm tra code, đối chiếu thiết kế, thống nhất schema và rules đến kiểm thử cục bộ. Figma được dùng để tham khảo cấu trúc, màu sắc, thẻ và nhận diện. Những khái niệm như sản phẩm khách sạn hoặc thanh toán trong thiết kế không được biến thành tính năng giả khi backend chưa hỗ trợ. Bộ báo cáo mô tả sản phẩm đã có, sau đó mới trình bày hướng phát triển.
+Nhóm sử dụng Figma làm tài liệu tham khảo về bố cục, màu sắc và cách trình bày các màn hình. Khi đưa vào ứng dụng, giao diện được điều chỉnh theo các chức năng đã có trong mã nguồn. Vì vậy, một số nội dung trong thiết kế như đặt phòng, giỏ hàng hoặc thanh toán được để lại cho hướng phát triển sau. Phần triển khai hiện tại tập trung vào lập kế hoạch chuyến đi và cộng tác giữa các thành viên.
 
 **Tổng quan sản phẩm và phiên bản báo cáo.**
 
-TripTogether là ứng dụng Android hỗ trợ một nhóm người cùng lập kế hoạch chuyến đi, quản lý thành viên, trao đổi tin nhắn và chia sẻ ảnh hoặc tài liệu. Nhóm xây dựng sản phẩm bằng Kotlin và giao diện XML, sử dụng Firebase Authentication cho danh tính, Firebase Realtime Database cho dữ liệu nghiệp vụ và Google Drive cho nội dung file. Trọng tâm là một ứng dụng lập kế hoạch du lịch cơ bản có luồng sử dụng rõ ràng và cấu trúc dữ liệu phù hợp với quyền thành viên.
+TripTogether được xây dựng bằng Kotlin và giao diện XML. Firebase Authentication phụ trách xác thực tài khoản, Firebase Realtime Database lưu thông tin chuyến đi và dữ liệu cộng tác, còn Google Drive lưu ảnh và tài liệu. Cách phân chia này được sử dụng xuyên suốt trong các luồng đăng nhập, tạo chuyến đi và chia sẻ nội dung.
 
-Phiên bản được mô tả có 24 Activity khai báo trong manifest. Người dùng bắt đầu ở màn Welcome, chọn đăng nhập hoặc đăng ký, sau đó truy cập Home, My Trips, Favorites và Account. Các màn lịch trình, thành viên, chat, ảnh, tài liệu, bản đồ, trợ giúp và thông báo phục vụ từng chuyến đi. Thiết kế tham khảo bản Figma cuối và được chuyển thành các thành phần Android native thay vì dùng ảnh chụp làm giao diện.
+Phiên bản được đối chiếu có 24 Activity khai báo trong AndroidManifest.xml. Người dùng bắt đầu tại màn hình Welcome, chọn đăng nhập hoặc đăng ký, sau đó sử dụng bốn mục chính: Home, My Trips, Favorites và Account. Từ mỗi chuyến đi, người dùng có thể mở lịch trình, danh sách thành viên, chat, ảnh, tài liệu và bản đồ. Các màn hình được triển khai bằng thành phần Android native dựa trên bản Figma tham khảo.
 
-Kết quả cục bộ đã lưu gồm 6 unit test và 7 bài kiểm thử Android không có lỗi. Bộ 6 unit test gồm 5 ca kiểm tra chức năng và 1 ca kiểm tra mẫu. Kiểm thử Android xác nhận điều hướng, validation, recreation, layout và chế độ tối; các kết quả này không thay thế nghiệm thu đa tài khoản trên Firebase và Google Drive thật. Những hạng mục cloud cần xác minh và giới hạn còn lại được trình bày ở phần kiểm thử, đánh giá và định hướng trong mục 3.2.
+Các kết quả kiểm thử cục bộ đã lưu gồm 6 unit test và 7 ca kiểm thử Android, đều không ghi nhận lỗi. Trong 6 unit test có 5 ca kiểm tra chức năng và 1 ca kiểm tra mẫu. Các ca Android kiểm tra điều hướng, dữ liệu nhập, phục hồi màn hình, bố cục và chế độ tối. Kết quả này là cơ sở đánh giá phần ứng dụng; luồng Firebase và Google Drive vẫn cần được nghiệm thu riêng bằng nhiều tài khoản như mô tả ở mục 3.2.
 
-**Bảng 2. Thông tin kỹ thuật của phiên bản báo cáo**
+<a id="bang-1-2"></a>
+
+**Bảng 1.2. Thông tin kỹ thuật của phiên bản báo cáo**
 
 | Thuộc tính | Giá trị |
 | --- | --- |
@@ -115,7 +167,9 @@ TripTogether sử dụng Kotlin để triển khai ứng dụng Android và XML 
 
 Kotlin là ngôn ngữ triển khai chính; XML mô tả layout và ViewBinding tạo tham chiếu có kiểu tới view. Android Studio là môi trường phát triển, Gradle quản lý build và thư viện. Đối với bản này, Java và Kotlin target là 17; JDK dùng để chạy Gradle có thể là 17 hoặc 21 theo script của dự án. Không đồng nhất JDK chạy Gradle với mức API thiết bị.
 
-**Bảng 3. Phiên bản trích từ cấu hình dự án**
+<a id="bang-2-1"></a>
+
+**Bảng 2.1. Phiên bản trích từ cấu hình dự án**
 
 | Thành phần | Phiên bản hoặc giá trị | Vai trò |
 | --- | --- | --- |
@@ -132,13 +186,17 @@ Kotlin là ngôn ngữ triển khai chính; XML mô tả layout và ViewBinding 
 | Google Maps SDK | 19.2.0 | Bản đồ chuyến đi |
 | Spotless và ktfmt | 7.2.1 và 0.54 | Định dạng code |
 
-Đây là phiên bản khai báo trong dự án, không phải khẳng định tất cả đều là phiên bản mới nhất. Alias firebase-storage còn tồn tại trong catalog nhưng không được thêm vào dependencies của app. Phương án đang chạy không dùng Firebase Storage, Firestore hoặc Cloud Functions cho lưu file; các file hỗ trợ phương án cũ vẫn nằm trong thư mục firebase nhưng không được triển khai bởi cấu hình active.
+Các phiên bản thư viện được lấy từ cấu hình dự án tại thời điểm đối chiếu. Trong danh mục thư viện vẫn còn khai báo Firebase Storage, nhưng thư viện này không được thêm vào dependencies của ứng dụng. Luồng lưu file hiện tại sử dụng Google Drive. Những file cấu hình Storage, Firestore hoặc Cloud Functions còn lại thuộc phương án trước và không được triển khai bởi cấu hình đang sử dụng.
 
 <a id="muc-2-2"></a>
 
 ### 2.2. Các tính năng của ứng dụng.
 
-**Bảng 4. Danh mục yêu cầu chức năng**
+Các chức năng được nhóm thành mười yêu cầu trong [Bảng 2.2](#bang-2-2). Mỗi mã FR được dùng để đối chiếu chức năng với luồng sử dụng và các kịch bản kiểm thử ở phần thiết kế hệ thống.
+
+<a id="bang-2-2"></a>
+
+**Bảng 2.2. Danh mục yêu cầu chức năng**
 
 | Mã | Yêu cầu | Tiêu chí chính |
 | --- | --- | --- |
@@ -155,7 +213,7 @@ Kotlin là ngôn ngữ triển khai chính; XML mô tả layout và ViewBinding 
 
 **Yêu cầu phi chức năng.**
 
-Giao diện cần có vùng chạm đủ lớn, form cuộn được khi bàn phím xuất hiện và nội dung không bị ép thành thanh ngang khi chữ lớn. Lỗi mạng hoặc permission phải được phản hồi thay vì báo thành công trước khi backend xác nhận. Không ghi mật khẩu hay access token vào database. Những dữ liệu dùng làm fixture phục vụ kiểm tra layout chỉ nằm trong source debug và không phải dữ liệu nghiệp vụ của release.
+Bên cạnh các chức năng chính, ứng dụng cần dễ thao tác trên màn hình nhỏ: vùng chạm đủ lớn, biểu mẫu cuộn được khi bàn phím mở và nội dung có thể xuống dòng khi tăng cỡ chữ. Với thao tác qua mạng, người dùng cần biết khi nào dữ liệu đang được xử lý và khi nào cần thử lại. Mật khẩu và access token không được ghi vào database; dữ liệu mẫu phục vụ kiểm tra giao diện chỉ nằm trong bản debug.
 
 Ứng dụng hiện giới hạn listener chat và file ở 100 bản ghi gần nhất để hạn chế lượng tải. Đây là giới hạn truy vấn, không phải cơ chế phân trang hoàn chỉnh. Chưa có số liệu đo độ trễ, mức tiêu thụ bộ nhớ hoặc thông lượng nhiều người dùng; vì vậy không đưa ra cam kết hiệu năng định lượng trong báo cáo.
 
@@ -176,7 +234,7 @@ LoginActivity và RegisterActivity có mode cố định và dùng chung AuthFor
 
 **Ca sử dụng tạo chuyến đi.**
 
-Điều kiện trước là người dùng đã đăng nhập; nếu chọn ảnh bìa, tài khoản Google còn phải có quyền Drive phù hợp. App kiểm tra ngày hợp lệ và thứ tự ngày, tìm UID theo email mời đã chuẩn hóa, tạo tripId và gọi geocoding. Sau khi upload ảnh bìa tùy chọn, TripRepository thực hiện một updateChildren ghi trip, tripAccess và userTrips cho mọi thành viên. Chỉ khi thao tác RTDB được xác nhận mới hoàn tất ca sử dụng [3].
+Điều kiện trước là người dùng đã đăng nhập; nếu chọn ảnh bìa, tài khoản Google còn phải có quyền Drive phù hợp. App kiểm tra ngày hợp lệ và thứ tự ngày, tìm UID theo email mời đã chuẩn hóa, tạo tripId và gọi geocoding. Sau khi upload ảnh bìa tùy chọn, TripRepository thực hiện một updateChildren ghi trip, tripAccess và userTrips cho mọi thành viên. Chỉ khi thao tác RTDB được xác nhận mới hoàn tất ca sử dụng [[3]](#tai-lieu-3).
 
 Nếu email chưa có tài khoản, app thông báo lỗi người được mời chưa đăng ký. Nếu geocoding không trả tọa độ, code dùng 0,0; màn bản đồ coi cặp giá trị này là chưa có vị trí. Nếu database từ chối sau upload ảnh bìa, ảnh có thể còn trên Drive vì cleanup cover chưa đầy đủ. Đây là ranh giới giữa thao tác database nguyên tử và tác vụ liên dịch vụ.
 
@@ -202,7 +260,9 @@ Logo được chuyển từ asset SVG FT và FindTrip thành VectorDrawable đ�
 
 **Bản đồ màn hình.**
 
-**Bảng 5. Màn hình và thao tác chính**
+<a id="bang-2-3"></a>
+
+**Bảng 2.3. Màn hình và thao tác chính**
 
 | Nhóm | Activity | Thao tác |
 | --- | --- | --- |
@@ -224,18 +284,26 @@ Các hình dưới đây là ảnh render cục bộ của layout Android với 
   <img src="assets/ui/activity_main.png" width="280" alt="Màn chọn xác thực và Home với dữ liệu minh họa — ảnh 2" />
 </p>
 
-*Hình 1. Màn chọn xác thực và Home với dữ liệu minh họa*
+<a id="hinh-2-1"></a>
 
-Welcome có hai hành động chính giúp người mới phân biệt đăng nhập và tạo tài khoản. Home ưu tiên tìm kiếm, bộ lọc thời gian và các card có ảnh. My Trips dùng lại layout chung nhưng đổi ngữ cảnh sang danh sách trip của người dùng. Thẻ không hiển thị giá hay nút đặt phòng vì dữ liệu hiện tại là chuyến đi, không phải catalog bán dịch vụ.
+*Hình 2.1. Màn chọn xác thực và Home với dữ liệu minh họa*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Màn hình Welcome đặt hai lựa chọn đăng nhập và tạo tài khoản ở vị trí dễ nhận biết. Sau khi đăng nhập, Home ưu tiên phần tìm kiếm, bộ lọc thời gian và các thẻ chuyến đi có ảnh. My Trips sử dụng lại cách trình bày này cho danh sách chuyến đi của tài khoản. Vì ứng dụng phục vụ lập kế hoạch nhóm, các thẻ chỉ hiển thị thông tin chuyến đi, không có giá phòng hoặc nút đặt dịch vụ.
 
 <p align="center">
   <img src="assets/ui/activity_favorites.png" width="280" alt="Yêu thích và tổng quan chuyến đi — ảnh 1" />
   <img src="assets/ui/activity_trip_summary.png" width="280" alt="Yêu thích và tổng quan chuyến đi — ảnh 2" />
 </p>
 
-*Hình 2. Yêu thích và tổng quan chuyến đi*
+<a id="hinh-2-2"></a>
 
-Favorites dùng thẻ gọn với ảnh bên trái và thông tin màu kem trên nền xanh. Trip summary ưu tiên ảnh bìa, thông tin ngày đi và các lối vào kế hoạch hoặc nội dung của trip. Các khối trạng thái lỗi, rỗng và thử lại được đặt trong vùng có thể cuộn để không ép nút retry khi màn hình thấp.
+*Hình 2.2. Yêu thích và tổng quan chuyến đi*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Ở Favorites, mỗi chuyến đi được trình bày bằng thẻ ngang, với ảnh bên trái và thông tin trên nền xanh. Màn hình tổng quan ưu tiên ảnh bìa, ngày đi và các lối vào lịch trình, thành viên hoặc nội dung chia sẻ. Các thông báo lỗi và nút thử lại được đặt trong vùng có thể cuộn để người dùng vẫn thao tác được trên màn hình thấp.
 
 **Tài khoản và hỗ trợ.**
 
@@ -244,7 +312,11 @@ Favorites dùng thẻ gọn với ảnh bên trái và thông tin màu kem trên
   <img src="assets/ui/activity_help_support_live.png" width="280" alt="Account và FAQ khi chạy HelpSupportActivity — ảnh 2" />
 </p>
 
-*Hình 3. Account và FAQ khi chạy HelpSupportActivity*
+<a id="hinh-2-3"></a>
+
+*Hình 2.3. Account và FAQ khi chạy HelpSupportActivity*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
 
 Account giữ các mục Profile, Settings, My Trips, Help và Logout. Nút kết nối Drive là chức năng bổ sung phục vụ lưu file, không phải quyền được cấp tự động bởi Firebase. Edit Profile lưu tên, họ, role mô tả, email và avatar; các trường điện thoại, địa chỉ, thành phố và khu vực trong một số frame Figma chưa được thêm vào model. Settings có light, dark và system; chưa có cơ chế đổi tiền tệ hoặc đa ngôn ngữ hoàn chỉnh.
 
@@ -255,9 +327,13 @@ Account giữ các mục Profile, Settings, My Trips, Help và Logout. Nút kế
   <img src="assets/ui/activity_settings_dark_large.png" width="280" alt="Kiểm tra night mode với fontScale 1.3 — ảnh 2" />
 </p>
 
-*Hình 4. Kiểm tra night mode với fontScale 1.3*
+<a id="hinh-2-4"></a>
 
-Các ảnh night mode đồng thời dùng fontScale 1.3 để quan sát khả năng xuống dòng. Grid Home giữ chiều cao card thống nhất thay cho masonry của catalog Figma. Những màn giỏ hàng, thanh toán, blog, OTP và carousel onboarding chưa có chức năng tương ứng. Bản triển khai không đưa các nút không có nghiệp vụ vào luồng người dùng chỉ để giống ảnh thiết kế.
+*Hình 2.4. Kiểm tra night mode với fontScale 1.3*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Nhóm kiểm tra chế độ tối kết hợp cỡ chữ `fontScale = 1.3` để quan sát khả năng xuống dòng. Lưới chuyến đi ở Home dùng các thẻ có chiều cao thống nhất, thay cho bố cục so le trong một số màn Figma. Các màn giỏ hàng, thanh toán, blog, OTP và giới thiệu dạng carousel chưa nằm trong phạm vi chức năng của phiên bản này.
 
 **Giao diện tạo chuyến đi và lịch trình.**
 
@@ -266,7 +342,13 @@ Các ảnh night mode đồng thời dùng fontScale 1.3 để quan sát khả n
   <img src="assets/ui/activity_trip_plan.png" width="280" alt="Giao diện tạo chuyến đi và lịch trình; ảnh render cục bộ — ảnh 2" />
 </p>
 
-*Hình 5. Giao diện tạo chuyến đi và lịch trình; ảnh render cục bộ*
+<a id="hinh-2-5"></a>
+
+*Hình 2.5. Giao diện tạo chuyến đi và lịch trình; ảnh render cục bộ*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Màn tạo chuyến đi thu thập thông tin cơ bản như tên, nơi đến, ngày đi và ảnh bìa. Sau khi tạo, người dùng chuyển sang lịch trình để thêm hoạt động theo từng ngày; các thao tác sửa và xóa được đặt cùng nhóm để dễ tìm.
 
 **Giao diện quản lý thành viên.**
 
@@ -275,7 +357,13 @@ Các ảnh night mode đồng thời dùng fontScale 1.3 để quan sát khả n
   <img src="assets/ui/activity_edit_friends.png" width="280" alt="Giao diện quản lý thành viên; ảnh render cục bộ — ảnh 2" />
 </p>
 
-*Hình 6. Giao diện quản lý thành viên; ảnh render cục bộ*
+<a id="hinh-2-6"></a>
+
+*Hình 2.6. Giao diện quản lý thành viên; ảnh render cục bộ*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Danh sách thành viên cho biết những người tham gia chuyến đi. Chủ chuyến đi mở màn quản lý để mời tài khoản đã đăng ký hoặc gỡ thành viên; quyền thực hiện được kiểm tra cùng dữ liệu membership.
 
 **Giao diện chat và thư viện nội dung.**
 
@@ -284,7 +372,13 @@ Các ảnh night mode đồng thời dùng fontScale 1.3 để quan sát khả n
   <img src="assets/ui/activity_documents_home.png" width="280" alt="Giao diện chat và thư viện nội dung; ảnh render cục bộ — ảnh 2" />
 </p>
 
-*Hình 7. Giao diện chat và thư viện nội dung; ảnh render cục bộ*
+<a id="hinh-2-7"></a>
+
+*Hình 2.7. Giao diện chat và thư viện nội dung; ảnh render cục bộ*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Màn chat phục vụ trao đổi trong từng chuyến đi. Màn thư viện nội dung chia các file thành hai nhóm ảnh và tài liệu, đồng thời cung cấp thao tác tải lên để người dùng bổ sung nội dung chung.
 
 **Giao diện ảnh và tài liệu PDF.**
 
@@ -293,7 +387,13 @@ Các ảnh night mode đồng thời dùng fontScale 1.3 để quan sát khả n
   <img src="assets/ui/activity_documents.png" width="280" alt="Giao diện ảnh và tài liệu PDF; ảnh render cục bộ — ảnh 2" />
 </p>
 
-*Hình 8. Giao diện ảnh và tài liệu PDF; ảnh render cục bộ*
+<a id="hinh-2-8"></a>
+
+*Hình 2.8. Giao diện ảnh và tài liệu PDF; ảnh render cục bộ*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Ảnh và tài liệu PDF được hiển thị ở hai danh sách riêng. Nội dung các danh sách được lấy từ metadata trong Realtime Database, còn file gốc nằm trên Drive. Các ảnh minh họa này được render khi chưa nạp dữ liệu động.
 
 **Giao diện xem ảnh và bản đồ.**
 
@@ -302,7 +402,13 @@ Các ảnh night mode đồng thời dùng fontScale 1.3 để quan sát khả n
   <img src="assets/ui/activity_trip_map.png" width="280" alt="Giao diện xem ảnh và bản đồ; ảnh render cục bộ — ảnh 2" />
 </p>
 
-*Hình 9. Giao diện xem ảnh và bản đồ; ảnh render cục bộ*
+<a id="hinh-2-9"></a>
+
+*Hình 2.9. Giao diện xem ảnh và bản đồ; ảnh render cục bộ*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Màn xem ảnh tập trung vào nội dung ảnh được chọn. Màn bản đồ sử dụng vị trí của chuyến đi; trong ảnh render cục bộ, vùng ảnh và bản đồ chưa được nạp nên chỉ thể hiện phần bố cục bao quanh.
 
 **Giao diện hồ sơ và tìm kiếm.**
 
@@ -311,7 +417,13 @@ Các ảnh night mode đồng thời dùng fontScale 1.3 để quan sát khả n
   <img src="assets/ui/activity_search_results.png" width="280" alt="Giao diện hồ sơ và tìm kiếm; ảnh render cục bộ — ảnh 2" />
 </p>
 
-*Hình 10. Giao diện hồ sơ và tìm kiếm; ảnh render cục bộ*
+<a id="hinh-2-10"></a>
+
+*Hình 2.10. Giao diện hồ sơ và tìm kiếm; ảnh render cục bộ*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Màn hồ sơ cho phép sửa thông tin cá nhân và ảnh đại diện. Màn tìm kiếm hỗ trợ nhập từ khóa và chọn bộ lọc cho danh sách chuyến đi mà tài khoản có quyền truy cập.
 
 **Giao diện cài đặt ban ngày và thông báo.**
 
@@ -320,7 +432,13 @@ Các ảnh night mode đồng thời dùng fontScale 1.3 để quan sát khả n
   <img src="assets/ui/activity_notifications.png" width="280" alt="Giao diện cài đặt ban ngày và thông báo; ảnh render cục bộ — ảnh 2" />
 </p>
 
-*Hình 11. Giao diện cài đặt ban ngày và thông báo; ảnh render cục bộ*
+<a id="hinh-2-11"></a>
+
+*Hình 2.11. Giao diện cài đặt ban ngày và thông báo; ảnh render cục bộ*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Cài đặt giao diện gồm ba lựa chọn: theo thiết bị, sáng và tối. Danh sách thông báo trong phiên bản này tổng hợp các chuyến đi có tin nhắn chưa đọc; đây là thông báo trong ứng dụng.
 
 **Giao diện đăng nhập và khôi phục mật khẩu.**
 
@@ -329,9 +447,13 @@ Các ảnh night mode đồng thời dùng fontScale 1.3 để quan sát khả n
   <img src="assets/ui/activity_forgot_password.png" width="280" alt="Giao diện đăng nhập và khôi phục mật khẩu; ảnh render cục bộ — ảnh 2" />
 </p>
 
-*Hình 12. Giao diện đăng nhập và khôi phục mật khẩu; ảnh render cục bộ*
+<a id="hinh-2-12"></a>
 
-Form đăng ký được triển khai bằng RegisterActivity, dùng chung AuthFormActivity với màn đăng nhập nhưng có tên người dùng và xác nhận mật khẩu. Bộ ảnh hiện có chưa có ảnh Register riêng nên báo cáo mô tả luồng từ code; hình đăng nhập không được gắn nhãn thành hình đăng ký. Các trường runtime trống trong ảnh render chỉ phản ánh bộ fixture, không chứng minh dữ liệu cloud bị mất.
+*Hình 2.12. Giao diện đăng nhập và khôi phục mật khẩu; ảnh render cục bộ*
+
+Nguồn: Bộ ảnh kiểm tra giao diện cục bộ của dự án [[8]](#tai-lieu-8).
+
+Màn đăng ký được triển khai trong `RegisterActivity`, dùng chung `AuthFormActivity` với màn đăng nhập và bổ sung tên người dùng, xác nhận mật khẩu. Bộ ảnh hiện có chưa có ảnh riêng của màn đăng ký, nên phần này được mô tả dựa trên mã nguồn. Một số ảnh render còn trống các vùng dữ liệu động; chúng chỉ minh họa bố cục và không phản ánh trạng thái dữ liệu trên Firebase.
 
 <a id="muc-3"></a>
 
@@ -341,11 +463,17 @@ Form đăng ký được triển khai bằng RegisterActivity, dùng chung AuthF
 
 ### 3.1. Sơ đồ phân rã chức năng.
 
+[Hình 3.1](#hinh-3-1) chia ứng dụng thành bốn nhóm chức năng. Từ đó, [Hình 3.2](#hinh-3-2) thể hiện cách các màn hình kết nối với lớp quản lý trạng thái, repository và dịch vụ bên ngoài.
+
 <p align="center">
   <img src="assets/diagrams/functions.png" width="760" alt="Các nhóm chức năng của TripTogether — ảnh 1" />
 </p>
 
-*Hình 13. Các nhóm chức năng của TripTogether*
+<a id="hinh-3-1"></a>
+
+*Hình 3.1. Các nhóm chức năng của TripTogether*
+
+Nguồn: Sơ đồ tổng hợp từ mã nguồn dự án [[8]](#tai-lieu-8).
 
 **Kiến trúc ứng dụng.**
 
@@ -353,13 +481,19 @@ Form đăng ký được triển khai bằng RegisterActivity, dùng chung AuthF
   <img src="assets/diagrams/architecture.png" width="760" alt="Kiến trúc ứng dụng và các dịch vụ bên ngoài — ảnh 1" />
 </p>
 
-*Hình 14. Kiến trúc ứng dụng và các dịch vụ bên ngoài*
+<a id="hinh-3-2"></a>
+
+*Hình 3.2. Kiến trúc ứng dụng và các dịch vụ bên ngoài*
+
+Nguồn: Sơ đồ tổng hợp từ mã nguồn dự án [[8]](#tai-lieu-8).
 
 Lớp giao diện gồm Activity, layout XML và adapter RecyclerView. Activity tiếp nhận thao tác, điều hướng và hiển thị trạng thái. ViewModel giữ trạng thái và chạy công việc trong viewModelScope. Repository triển khai truy vấn hoặc thao tác ghi với Firebase và Drive. Phần backend là dịch vụ được quản lý kết hợp Security Rules; không có máy chủ REST riêng đang vận hành cho phiên bản này.
 
-Các contract trong DataSources.kt mô tả khả năng của từng repository. UiState biểu diễn Loading, Content và Error; danh sách rỗng là Content với tập dữ liệu rỗng chứ không phải một enum Empty riêng. ActionState gồm Idle, Running, Done và Error. ActionViewModel chặn thao tác ghi lặp khi đang Running và giữ công việc qua Activity recreation, nhưng không bảo đảm tiếp tục sau khi tiến trình bị hệ điều hành kết thúc.
+Các interface trong `DataSources.kt` quy định thao tác mà từng repository cung cấp. `UiState` có ba trạng thái `Loading`, `Content` và `Error`; danh sách rỗng được biểu diễn bằng `Content` với tập dữ liệu rỗng. `ActionState` gồm `Idle`, `Running`, `Done` và `Error`. Khi một thao tác đang chạy, `ActionViewModel` ngăn gửi lại yêu cầu ghi và giữ công việc khi Activity được tạo lại. Nếu tiến trình ứng dụng bị hệ điều hành kết thúc, công việc chưa được bảo đảm tiếp tục.
 
-**Bảng 6. Các lớp chính và trách nhiệm**
+<a id="bang-3-1"></a>
+
+**Bảng 3.1. Các lớp chính và trách nhiệm**
 
 | Nhóm | Thành phần | Trách nhiệm |
 | --- | --- | --- |
@@ -384,13 +518,17 @@ Firebase Authentication cấp UID sau khi đăng nhập; UID là khóa liên k�
 
 **Mô hình dữ liệu tổng quát.**
 
-Realtime Database lưu cây JSON; các node không phải bảng quan hệ có khóa ngoại tự động. Firebase Auth quản lý mật khẩu và UID, còn database lưu profile cùng dữ liệu trip. Quan hệ nhiều người dùng tham gia nhiều trip được biểu diễn bằng tripAccess và userTrips. Sơ đồ dưới là quan hệ nghiệp vụ; tính nhất quán do code ghi nhiều nhánh và Security Rules duy trì.
+Dữ liệu được tổ chức thành cây JSON trong Realtime Database. Firebase Authentication quản lý thông tin xác thực và cấp UID cho tài khoản; database lưu hồ sơ cùng dữ liệu chuyến đi. Một người có thể tham gia nhiều chuyến đi và mỗi chuyến đi có nhiều thành viên. Quan hệ này được biểu diễn qua `tripAccess` và `userTrips`. Sơ đồ bên dưới mô tả quan hệ nghiệp vụ; tính nhất quán giữa các nhánh được duy trì bằng thao tác ghi nhiều vị trí và Security Rules, thay vì khóa ngoại như trong cơ sở dữ liệu quan hệ.
 
 <p align="center">
   <img src="assets/diagrams/data-relations.png" width="760" alt="Quan hệ logic giữa tài khoản chuyến đi và nội dung — ảnh 1" />
 </p>
 
-*Hình 15. Quan hệ logic giữa tài khoản chuyến đi và nội dung*
+<a id="hinh-3-3"></a>
+
+*Hình 3.3. Quan hệ logic giữa tài khoản chuyến đi và nội dung*
+
+Nguồn: Sơ đồ tổng hợp từ mã nguồn dự án [[8]](#tai-lieu-8).
 
 ```text
 Realtime Database
@@ -409,11 +547,13 @@ Realtime Database
 `-- tripDocuments/{tripId}/{itemId}
 ```
 
-userTrips giúp app biết đường dẫn creatorUid để đọc từng trip được cấp quyền thay vì tải toàn bộ /trips. favorites lưu tham chiếu creatorUid thay cho bản sao trip, nên nội dung hiển thị được đọc lại từ nguồn chính. Một số nhánh đọc vẫn dung nạp index boolean hoặc snapshot cũ; điều này không thay thế migration đầy đủ cho người được mời.
+`userTrips` lưu tham chiếu để ứng dụng tìm đúng đường dẫn `creatorUid` của từng chuyến đi mà tài khoản được phép đọc (xem [Bảng 3.4](#bang-3-4)). Nhờ đó, ứng dụng không phải tải toàn bộ nhánh `/trips`. Tương tự, `favorites` lưu tham chiếu thay cho bản sao chuyến đi, nên thông tin hiển thị vẫn được đọc từ bản ghi chính. Một số nhánh đọc còn hỗ trợ chỉ mục boolean hoặc snapshot cũ; dữ liệu cũ vẫn cần được chuyển đổi đầy đủ để các tài khoản được mời truy cập nhất quán.
 
 **Từ điển dữ liệu người dùng và chuyến đi.**
 
-**Bảng 7. Profile dưới users uid**
+<a id="bang-3-2"></a>
+
+**Bảng 3.2. Hồ sơ người dùng tại `users/{uid}`**
 
 | Trường | Kiểu | Ý nghĩa |
 | --- | --- | --- |
@@ -425,7 +565,9 @@ userTrips giúp app biết đường dẫn creatorUid để đọc từng trip �
 | photoUrl | string tùy chọn | Ảnh từ provider hoặc profile ban đầu |
 | imageUrl | string tùy chọn | Ảnh đã chỉnh, ưu tiên khi hiển thị |
 
-**Bảng 8. Trip dưới trips creatorUid tripId**
+<a id="bang-3-3"></a>
+
+**Bảng 3.3. Chuyến đi tại `trips/{creatorUid}/{tripId}`**
 
 | Trường | Kiểu | Quy ước |
 | --- | --- | --- |
@@ -441,7 +583,9 @@ userTrips giúp app biết đường dẫn creatorUid để đọc từng trip �
 
 **Quyền thành viên và chỉ mục.**
 
-**Bảng 9. Các node quyền và tham chiếu**
+<a id="bang-3-4"></a>
+
+**Bảng 3.4. Các node quyền và tham chiếu**
 
 | Path hoặc trường | Giá trị | Ý nghĩa |
 | --- | --- | --- |
@@ -457,7 +601,9 @@ Khi load trip, TripRepository lấy members từ tripAccess nếu node này tồ
 
 **Tin nhắn và metadata file.**
 
-**Bảng 10. Các trường dùng chung cho chat và file**
+<a id="bang-3-5"></a>
+
+**Bảng 3.5. Các trường dùng chung cho chat và file**
 
 | Bản ghi | Trường | Quy ước |
 | --- | --- | --- |
@@ -475,7 +621,9 @@ Rules ảnh giới hạn MIME image/ và tối đa 10 MiB; tài liệu chỉ ch�
 
 **Ma trận phân quyền.**
 
-**Bảng 11. Quyền theo vai trò của một trip**
+<a id="bang-3-6"></a>
+
+**Bảng 3.6. Quyền theo vai trò của một trip**
 
 | Tác vụ | Owner | Thành viên | Ngoài trip |
 | --- | --- | --- | --- |
@@ -487,7 +635,7 @@ Rules ảnh giới hạn MIME image/ và tối đa 10 MiB; tài liệu chỉ ch�
 | Gỡ owner khỏi membership | Không | Không | Không |
 | Xóa toàn trip hoặc ACL qua UI | Chưa hỗ trợ | Chưa hỗ trợ | Không |
 
-Node gốc đặt .read và .write là false. Quyền được mở tại đúng path theo UID hoặc membership. Rules không tự lọc các node con cho một lần đọc node cha; do đó app đọc theo index và từng trip, không mở quyền đọc toàn cây để chữa lỗi tải dữ liệu [4]. Hồ sơ users/uid hiện đọc được bởi tài khoản đã xác thực; truy vấn cả users chỉ được cho phép với emailNormalized bằng một giá trị và limitToFirst bằng 1. Đây là danh bạ có xác thực, chưa phải hồ sơ riêng tư chỉ chia sẻ trong trip.
+Node gốc đặt .read và .write là false. Quyền được mở tại đúng path theo UID hoặc membership. Rules không tự lọc các node con cho một lần đọc node cha; do đó app đọc theo index và từng trip, không mở quyền đọc toàn cây để chữa lỗi tải dữ liệu [[4]](#tai-lieu-4). Hồ sơ users/uid hiện đọc được bởi tài khoản đã xác thực; truy vấn cả users chỉ được cho phép với emailNormalized bằng một giá trị và limitToFirst bằng 1. Đây là danh bạ có xác thực, chưa phải hồ sơ riêng tư chỉ chia sẻ trong trip.
 
 Một quyền ghi được cấp ở node cha có thể áp dụng tới node con. Vì owner được ghi ở cấp trip, không nên mô tả validation phía client là bảo đảm backend tuyệt đối cho mọi trường con. Code có validation giờ và ngày, rules kiểm tra định dạng và một số chiều dài; mức bao phủ với client độc hại cần được kiểm thử và siết tiếp. Báo cáo tách rõ kiểm tra UI khỏi ràng buộc bảo mật máy chủ.
 
@@ -497,7 +645,7 @@ Công cụ migrate.cjs và migration-plan.cjs chuẩn bị chuyển boolean user
 
 **Lý do tách database và file.**
 
-Database phù hợp với trường dữ liệu nhỏ, truy vấn và đồng bộ trạng thái. Ảnh và PDF cần nơi lưu bytes riêng; đưa nội dung nhị phân dạng base64 vào RTDB sẽ làm tăng kích thước và băng thông. Phiên bản thử nghiệm chọn Google Drive để đáp ứng cách vận hành đã thống nhất của dự án. Lựa chọn này không đồng nghĩa các giới hạn dung lượng, quota hoặc chính sách OAuth biến mất.
+Ảnh và tài liệu thường có dung lượng lớn hơn nhiều so với thông tin chuyến đi. Vì vậy, nhóm lưu nội dung file trên Google Drive, còn Realtime Database chỉ giữ đường dẫn và các thuộc tính cần để hiển thị. Cách làm này tránh đưa dữ liệu nhị phân dạng base64 vào database. Google Drive được chọn cho phạm vi thử nghiệm của đồ án; dung lượng, hạn mức API và yêu cầu OAuth vẫn cần được tính đến khi mở rộng.
 
 **Luồng upload và lưu metadata.**
 
@@ -505,11 +653,15 @@ Database phù hợp với trường dữ liệu nhỏ, truy vấn và đồng b�
   <img src="assets/diagrams/upload-flow.png" width="760" alt="Các bước lưu file và nhánh phục hồi khi metadata lỗi — ảnh 1" />
 </p>
 
-*Hình 16. Các bước lưu file và nhánh phục hồi khi metadata lỗi*
+<a id="hinh-3-4"></a>
 
-DriveApi kiểm tra folder đúng kiểu, tài khoản có canAddChildren và toàn bộ các trang permissions không có anyone hoặc domain. File được đọc vào cache riêng với giới hạn kích thước; sau đó app khởi tạo resumable upload và gửi bytes bằng một PUT. Session URL phải có origin Google API hợp lệ, redirect tự động bị tắt và access token chỉ gửi tới origin được kiểm tra. File staging được xóa trong finally khi thao tác kết thúc.
+*Hình 3.4. Các bước lưu file và nhánh phục hồi khi metadata lỗi*
 
-Khi upload thành công, FilesRepository ghi metadata vào tripImages hoặc tripDocuments. Nếu ghi database lỗi, code thử xóa file vừa tạo trong một tác vụ NonCancellable có timeout 5 giây, rồi ném lại lỗi. Rollback này là best effort và không tạo một transaction chung giữa Drive với RTDB. Với cover và avatar, nhánh upload riêng chưa có cleanup đầy đủ khi bước ghi hồ sơ hoặc trip thất bại.
+Nguồn: Sơ đồ tổng hợp từ mã nguồn dự án [[8]](#tai-lieu-8).
+
+DriveApi kiểm tra folder đúng kiểu, tài khoản có canAddChildren và toàn bộ các trang permissions không có anyone hoặc domain. File được đọc vào cache riêng với giới hạn kích thước; sau đó app khởi tạo resumable upload và gửi bytes bằng một PUT. Session URL phải có origin Google API hợp lệ, redirect tự động bị tắt và access token chỉ gửi tới origin được kiểm tra. File staging được xóa trong `finally` khi thao tác kết thúc. Quy trình tải lên được đối chiếu với tài liệu Drive API [[5]](#tai-lieu-5).
+
+Sau khi tải file lên Drive, `FilesRepository` ghi thông tin vào `tripImages` hoặc `tripDocuments`. Nếu bước ghi database thất bại, ứng dụng thử xóa file vừa tạo trong tác vụ `NonCancellable`, với thời gian chờ tối đa 5 giây, rồi trả lỗi về giao diện. Việc xóa bù này chỉ được thực hiện trong khả năng cho phép, vì Drive và Realtime Database không dùng chung một giao dịch (xem [Hình 3.4](#hinh-3-4)). Luồng ảnh bìa và ảnh đại diện còn cần bổ sung xử lý dọn file khi bước ghi chuyến đi hoặc hồ sơ thất bại.
 
 **Token và tải ảnh.**
 
@@ -519,13 +671,13 @@ DriveLinks chỉ nhận URL HTTPS có host và path media đúng dạng Drive AP
 
 **Giới hạn quyền Drive trong phương án thử nghiệm.**
 
-Thư mục Drive dùng chung không tạo ACL tách biệt tự động cho mỗi trip. Thành viên bị gỡ khỏi trip sẽ mất quyền đọc metadata RTDB theo rules, nhưng quyền Drive do Google quản lý không tự bị thu hồi. Nếu họ vẫn có quyền thư mục hoặc đã tải file, dữ liệu có thể tiếp tục truy cập được. Bản thử nghiệm yêu cầu folder Restricted và chia sẻ theo email cho tài khoản thử nghiệm; không dùng quyền anyone with the link [6].
+Thư mục Drive dùng chung không tạo ACL tách biệt tự động cho mỗi trip. Thành viên bị gỡ khỏi trip sẽ mất quyền đọc metadata RTDB theo rules, nhưng quyền Drive do Google quản lý không tự bị thu hồi. Nếu họ vẫn có quyền thư mục hoặc đã tải file, dữ liệu có thể tiếp tục truy cập được. Bản thử nghiệm yêu cầu folder Restricted và chia sẻ theo email cho tài khoản thử nghiệm; không dùng quyền anyone with the link [[6]](#tai-lieu-6).
 
 Scope đang xin là <https://www.googleapis.com/auth/drive>, rộng hơn nhu cầu tối thiểu của nhiều sản phẩm. Đây là cấu hình thử nghiệm hiện có, cần thu hẹp qua phương án chọn file/folder và đánh giá lại OAuth trước phát hành. Không đưa folder ID thật, access token hoặc file credential vào báo cáo; các ví dụ dùng placeholder.
 
 **Chuẩn bị môi trường Android.**
 
-```text
+```bash
 # From the repository root
 bash app/run-project.sh check
 bash app/run-project.sh run
@@ -539,11 +691,16 @@ Mở repository root trong Android Studio, chọn Gradle JDK 17 hoặc 21, cài 
 
 **Thiết lập Firebase cho project.**
 
-Bước 1 là tạo hoặc chọn Firebase project, thêm ứng dụng Android đúng package com.example.triptogether và đăng ký SHA của key ký thực tế. Dùng signingReport để lấy fingerprint, không đổi applicationId thành tên hiển thị TripTogether. Bước 2 là bật Email/Password và Google trong Authentication rồi tải google-services.json mới về app. Trong cấu hình đã đọc của phiên bản này, project ID là triptogetherv1 và RTDB URL thuộc khu vực asia-southeast1 [1][2].
+Các bước cấu hình Firebase được thực hiện theo thứ tự sau:
 
-Bước 3 là tạo Realtime Database, đối chiếu database URL trong file cấu hình và backup dữ liệu/rules trước thay đổi. Bước 4 là kiểm tra schema hiện có; dữ liệu legacy cần dry-run migration trước khi apply. Bước 5 là chạy emulator test và deploy riêng Database theo firebase.json đang active. Không triển khai Storage, Firestore hay Functions chỉ vì các file cũ còn tồn tại trong thư mục.
+1. Tạo hoặc chọn project, thêm ứng dụng Android với package `com.example.triptogether`, rồi đăng ký SHA của khóa ký thực tế. Dùng `signingReport` để lấy fingerprint; tên hiển thị TripTogether không thay thế `applicationId`.
+2. Bật Email/Password và Google trong Authentication, tải `google-services.json` và đặt trong thư mục `app`. Ở phiên bản đối chiếu, project ID là `triptogetherv1` và database thuộc khu vực `asia-southeast1` [[1]](#tai-lieu-1), [[2]](#tai-lieu-2).
 
-```text
+3. Tạo Realtime Database, đối chiếu URL với cấu hình ứng dụng và sao lưu dữ liệu cùng rules trước khi thay đổi.
+4. Kiểm tra cấu trúc dữ liệu đang có. Với dữ liệu cũ, chạy migration ở chế độ xem trước (dry-run) và kiểm tra kết quả trước khi áp dụng.
+5. Chạy bộ kiểm thử emulator, sau đó triển khai riêng Database theo `firebase.json` đang sử dụng. Các file Storage, Firestore hoặc Functions cũ không phải căn cứ để triển khai thêm dịch vụ.
+
+```bash
 # From firebase/
 npm ci
 npm test
@@ -562,7 +719,7 @@ Lệnh deploy và migration là quy trình vận hành được mô tả, không
 
 Với Drive, bật Google Drive API trong Google Cloud project liên quan, cấu hình Google Auth Platform và thêm tài khoản thử nghiệm theo trạng thái ứng dụng. Đặt folder Restricted, cấp quyền Editor cho đúng tài khoản thử nghiệm và lưu folder ID trong app/drive.local.properties. Trong app mở Account rồi Connect test Google Drive để đồng ý scope. Việc đã đăng nhập Google qua Firebase không thay thế bước authorization này.
 
-```text
+```properties
 # app/drive.local.properties  local only
 DRIVE_FOLDER_ID=<restricted_test_folder_id>
 
@@ -576,7 +733,9 @@ Maps và geocoding là hai luồng dùng key khác nhau trong cấu hình. Khôn
 
 **Dữ liệu lưu ở đâu.**
 
-**Bảng 12. Phân bố dữ liệu và thời gian tồn tại**
+<a id="bang-3-7"></a>
+
+**Bảng 3.7. Phân bố dữ liệu và thời gian tồn tại**
 
 | Nơi lưu | Nội dung | Vòng đời |
 | --- | --- | --- |
@@ -592,9 +751,11 @@ Maps và geocoding là hai luồng dùng key khác nhau trong cấu hình. Khôn
 
 **Phân tầng kiểm thử.**
 
-Báo cáo phân biệt bằng chứng tự động, kiểm tra layout và nghiệm thu cloud. Các test XML lưu trong build có timestamp ngày 15 tháng 10 năm 2026 theo giờ Việt Nam, không phải một lần chạy cloud ngày lập báo cáo. Lịch commit đã được đặt lại phục vụ tổ chức mã nguồn và không được dùng làm thời điểm thực hiện kiểm thử. Việc code có tính năng không đồng nghĩa toàn bộ dịch vụ thực đã được cấu hình và xác minh thành công.
+Kết quả dưới đây được tổng hợp từ các file kết quả kiểm thử đã lưu, có thời gian ngày 15/10/2026 theo giờ Việt Nam. Nhóm phân biệt ba phạm vi: kiểm thử tự động, kiểm tra giao diện và nghiệm thu với dịch vụ cloud. Thời gian commit không được dùng thay cho thời điểm chạy kiểm thử. Những tính năng đã có trong mã nguồn vẫn cần được kiểm tra trên Firebase và Google Drive thực tế trước khi xác nhận hoàn thành.
 
-**Bảng 13. Kết quả có bằng chứng cục bộ**
+<a id="bang-3-8"></a>
+
+**Bảng 3.8. Kết quả có bằng chứng cục bộ**
 
 | Nhóm | Số ca | Kết quả và giới hạn |
 | --- | --- | --- |
@@ -615,7 +776,11 @@ firebase/package.json hiện chạy Database Emulator cùng database.test.cjs v�
 
 **Kịch bản nghiệm thu cloud đề xuất.**
 
-**Bảng 14. Ma trận nghiệm thu ba tài khoản**
+Nhóm sử dụng ba tài khoản: A là chủ chuyến đi, B là thành viên được mời, C là người ngoài chuyến đi. [Bảng 3.9](#bang-3-9) mô tả các tình huống E01–E12 và kết quả mong đợi; các dòng này chưa được xem là kết quả nghiệm thu thực tế.
+
+<a id="bang-3-9"></a>
+
+**Bảng 3.9. Ma trận nghiệm thu ba tài khoản**
 
 | Mã | Thao tác | Kết quả mong đợi |
 | --- | --- | --- |
@@ -634,17 +799,17 @@ firebase/package.json hiện chạy Database Emulator cùng database.test.cjs v�
 
 **Đánh giá ưu điểm và giới hạn.**
 
-Ưu điểm của phiên bản là luồng sử dụng đã được tách rõ, nhiều thành phần UI dùng chung, dữ liệu trip không cần đọc toàn cây và việc upload không báo thành công trước bước ghi metadata. Danh tính dựa trên UID và timestamp máy chủ giúp hạn chế các sai lệch khi client tự ghi thông tin. Bộ test cục bộ tạo nền cho việc sửa giao diện mà vẫn kiểm tra recreation.
+Phiên bản hiện tại đã có luồng sử dụng từ xác thực đến quản lý chuyến đi và chia sẻ nội dung. Các thành phần giao diện được dùng lại giữa nhiều màn hình, dữ liệu chuyến đi được đọc theo chỉ mục của tài khoản, và thao tác lưu file chỉ báo thành công sau khi ghi metadata. UID và thời gian máy chủ giúp kiểm tra danh tính người gửi và sắp xếp dữ liệu nhất quán hơn. Bộ kiểm thử cục bộ hỗ trợ phát hiện lỗi khi chỉnh bố cục hoặc khi Activity được tạo lại.
 
-Giới hạn quan trọng nhất là ACL Drive chưa đồng bộ với membership trip. Các giới hạn khác gồm thiếu phân trang cũ, thiếu cleanup hoàn chỉnh cho cover/avatar, chưa phục hồi upload sau process death và chưa có UI xóa toàn trip/tài khoản. Lookup email được giới hạn query nhưng chưa có rate limit chống dò. Không có số liệu khảo sát người dùng hoặc đo hiệu năng tải lớn để suy rộng tính sẵn sàng phát hành.
+Vấn đề cần ưu tiên là quyền truy cập file trên Drive chưa tự đồng bộ với danh sách thành viên của chuyến đi. Ngoài ra, ứng dụng chưa có phân trang lịch sử chat/file, chưa dọn đầy đủ ảnh bìa và ảnh đại diện khi lỗi, chưa phục hồi upload sau khi tiến trình bị kết thúc và chưa có giao diện xóa toàn bộ chuyến đi hoặc tài khoản. Truy vấn email đã được giới hạn nhưng chưa có cơ chế giới hạn tần suất để chống dò tìm. Do chưa có khảo sát người dùng hoặc phép đo tải lớn, báo cáo chỉ đánh giá trong phạm vi thử nghiệm hiện có.
 
 **Kết quả và định hướng hoàn thiện.**
 
 **Kết quả đạt được.**
 
-TripTogether đã hình thành một ứng dụng Android cơ bản phục vụ lập kế hoạch du lịch theo nhóm. Phiên bản kết nối các màn xác thực, danh sách trip, lịch trình, thành viên và chia sẻ nội dung trên một kiến trúc Activity, ViewModel và Repository. Figma đóng vai trò định hướng trình bày trong khi dữ liệu và nghiệp vụ bám theo phần code thực tế.
+Qua quá trình triển khai, nhóm đã xây dựng được các thành phần chính của một ứng dụng lập kế hoạch du lịch nhóm: tài khoản, chuyến đi, lịch trình, thành viên, trò chuyện và chia sẻ nội dung. Các màn hình kết nối qua kiến trúc Activity, ViewModel và Repository. Figma được dùng làm định hướng giao diện, còn chức năng và dữ liệu được triển khai theo khả năng thực tế của mã nguồn.
 
-Thiết kế database làm rõ owner, membership chuẩn, chỉ mục và metadata. Phương án lưu file đã chuyển sang Drive và không yêu cầu bật toàn bộ phương án Storage cũ để chạy luồng active. Bản báo cáo này có thể dùng cho trình bày môn học sau khi điền thông tin nhóm, hoàn tất nghiệm thu cloud và bổ sung ảnh có dữ liệu thực đã được phép sử dụng.
+Phần thiết kế dữ liệu xác định được chủ chuyến đi, danh sách thành viên, chỉ mục tra cứu và metadata của file. Phương án lưu trữ sử dụng Google Drive thay cho luồng Firebase Storage trước đây. Trước khi dùng báo cáo để nghiệm thu, nhóm cần điền đủ thông tin thành viên, chạy các kịch bản cloud và bổ sung hình chụp với dữ liệu thử nghiệm đã được phép sử dụng.
 
 **Thứ tự hoàn thiện trước khi nộp.**
 
@@ -654,11 +819,13 @@ Thiết kế database làm rõ owner, membership chuẩn, chỉ mục và metada
 
 **Hướng phát triển dài hạn.**
 
-Các khả năng như lịch nhắc nền, thông báo push, danh sách việc chuẩn bị và đồng bộ offline có thể được xem xét ở giai đoạn sau. Đặt phòng hoặc thanh toán đòi hỏi mô hình dữ liệu, nhà cung cấp và luồng giao dịch riêng, vì vậy không ghép vào báo cáo như phần đã hoàn thành. Mọi mở rộng cần có tiêu chí nghiệm thu và ranh giới quyền rõ ràng trước khi thêm giao diện.
+Sau khi hoàn thiện các luồng hiện tại, nhóm có thể phát triển lịch nhắc, thông báo đẩy, danh sách công việc chuẩn bị và hỗ trợ sử dụng khi mất mạng. Những chức năng như đặt phòng hoặc thanh toán cần được thiết kế thành luồng riêng, có mô hình dữ liệu và cơ chế giao dịch phù hợp. Báo cáo xem đây là hướng phát triển, chưa phải kết quả đã đạt được.
 
 **Đối chiếu thiết kế với mã nguồn.**
 
-**Bảng 15. File kiểm chứng theo chủ đề**
+<a id="bang-3-10"></a>
+
+**Bảng 3.10. File kiểm chứng theo chủ đề**
 
 | Chủ đề | Đường dẫn trong repository |
 | --- | --- |
@@ -683,20 +850,36 @@ Tiếp theo kết nối Drive với đúng tài khoản, tải một ảnh nhỏ
 
 **Nguồn đối chiếu và tài liệu tham khảo.**
 
-[1] Firebase. Add Firebase to your Android project. <https://firebase.google.com/docs/android/setup>. Truy cập ngày 29 tháng 10 năm 2026.
+<a id="tai-lieu-1"></a>
 
-[2] Firebase. Authenticate with Google on Android. <https://firebase.google.com/docs/auth/android/google-signin>. Dùng để đối chiếu cấu hình provider; dự án hiện dùng FirebaseUI cho luồng Google.
+[1] Firebase, “Add Firebase to your Android project.” Tài liệu trực tuyến: [Firebase Android Setup](https://firebase.google.com/docs/android/setup). Truy cập ngày 29/10/2026.
 
-[3] Firebase. Read and Write Data on Android. <https://firebase.google.com/docs/database/android/read-and-write>. Tham khảo thao tác đọc ghi và update nhiều nhánh.
+<a id="tai-lieu-2"></a>
 
-[4] Firebase. Learn the core syntax of the Realtime Database Security Rules language. <https://firebase.google.com/docs/database/security/core-syntax>. Tham khảo phạm vi quyền đọc ghi và kế thừa rules.
+[2] Firebase, “Authenticate with Google on Android.” Tài liệu trực tuyến: [Google Sign-In](https://firebase.google.com/docs/auth/android/google-signin). Truy cập ngày 29/10/2026. Nguồn đối chiếu cấu hình Google; dự án hiện dùng FirebaseUI cho luồng đăng nhập này.
 
-[5] Google Developers. Upload file data. <https://developers.google.com/workspace/drive/api/guides/manage-uploads>. Đối chiếu việc khởi tạo upload và gửi bytes.
+<a id="tai-lieu-3"></a>
 
-[6] Google Developers. Share files folders and drives. <https://developers.google.com/workspace/drive/api/guides/manage-sharing>. Đối chiếu permissions của Drive. Các nguồn [2] đến [6] được kiểm tra ngày 29 tháng 10 năm 2026.
+[3] Firebase, “Read and Write Data on Android.” Tài liệu trực tuyến: [Realtime Database: Read and Write](https://firebase.google.com/docs/database/android/read-and-write). Truy cập ngày 29/10/2026. Tham khảo thao tác đọc, ghi và cập nhật nhiều nhánh.
 
-[7] Tài liệu môn học được cung cấp. Báo cáo tiến độ đồ án NT118 về ứng dụng ghi chú, bản DOCX và PDF trong thư mục ĐỒ ÁN của gói tài liệu môn học. Tham khảo bố cục bìa, mục lục, giới thiệu, công nghệ, giao diện và thiết kế hệ thống; không sử dụng thông tin nhóm mẫu như tác giả của TripTogether.
+<a id="tai-lieu-4"></a>
 
-[8] Mã nguồn TripTogether, revision 633e50d. Bằng chứng phiên bản gồm manifest, Gradle catalog, repositories, model, rules, test source và test XML local. Bộ ảnh UI review là render có fixture; bản Figma cuối được dùng làm tham chiếu trình bày.
+[4] Firebase, “Learn the core syntax of the Realtime Database Security Rules language.” Tài liệu trực tuyến: [Security Rules: Core Syntax](https://firebase.google.com/docs/database/security/core-syntax). Truy cập ngày 29/10/2026. Tham khảo phạm vi và sự kế thừa quyền truy cập.
+
+<a id="tai-lieu-5"></a>
+
+[5] Google for Developers, “Upload file data.” Tài liệu trực tuyến: [Google Drive API: Manage Uploads](https://developers.google.com/workspace/drive/api/guides/manage-uploads). Truy cập ngày 29/10/2026. Tham khảo quy trình khởi tạo phiên tải lên và gửi nội dung file.
+
+<a id="tai-lieu-6"></a>
+
+[6] Google for Developers, “Share files, folders and drives.” Tài liệu trực tuyến: [Google Drive API: Manage Sharing](https://developers.google.com/workspace/drive/api/guides/manage-sharing). Truy cập ngày 29/10/2026. Tham khảo cách quản lý quyền truy cập file và thư mục.
+
+<a id="tai-lieu-7"></a>
+
+[7] “Báo cáo tiến độ đồ án NT118 — Ứng dụng ghi chú,” bản DOCX và PDF trong thư mục ĐỒ ÁN của bộ tài liệu môn học được cung cấp. Tài liệu tham chiếu cho bìa, mục lục và cấu trúc ba chương; thông tin thành viên của nhóm mẫu không được sử dụng làm thông tin tác giả báo cáo này.
+
+<a id="tai-lieu-8"></a>
+
+[8] “TripTogether — mã nguồn dự án,” phiên bản `633e50d`. Trực tuyến: [repository tại phiên bản đối chiếu](https://github.com/khanhbinh-ngo/NT118-UIT-1001DateIdeas-TripTogetherVer1/tree/633e50d). Nguồn đối chiếu gồm AndroidManifest, cấu hình Gradle, repository, model, rules và mã kiểm thử. Kết quả kiểm thử XML và bộ ảnh kiểm tra giao diện được lưu cục bộ; ảnh có dữ liệu mẫu được sử dụng để minh họa bố cục.
 
 **HẾT**
